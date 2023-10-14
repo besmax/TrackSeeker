@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">TrackSeeker</string>
+    <string name="search">Поиск</string>
+    <string name="mediateka">Медиатека</string>
+    <string name="settings">Настройки</string>
+
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="contact_support">Написать в поддержку</string>
+    <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="you_searched">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
+
+
+    <string name="link_for_app_share">https://practicum.yandex.ru/android-developer/</string>
+    <string name="email_for_support">bespalov.m.9@ya.ru</string>
+    <string name="email_theme_for_support">Сообщение разработчикам и разработчицам приложения TrackSeeker</string>
+    <string name="email_text_for_support">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="error_no_suitable_app">Произошла ошибка, возможно нет подходящего приложения</string>
+
+    <string name="refresh">Обновить</string>
+    <string name="search_screen_placeholder_text_error">Проблемы со связью \n \n Загрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+
+
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="track_json">TRACK_JSON</string>
+
+    <string name="favorite_tracks_placeholder_text">Ваша медиатека пуста</string>
+    <string name="playlist_placeholder_text">Вы не создали \nни одного плейлиста</string>
+    <string name="playlist_placeholder_button">Новый плейлист</string>
+
+    <string name="mediateka_tab_title_favorite_tracks">Избранные треки</string>
+    <string name="mediateka_tab_title_playlist">Плейлисты</string>
+</resources>
