@@ -77,6 +77,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
@@ -90,6 +91,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.3")
 
     val nav_version = "2.7.4"
     implementation("androidx.navigation:navigation-compose:$nav_version")

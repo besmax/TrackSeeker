@@ -34,18 +34,26 @@ class SearchViewModel(
         if (searchJob?.isCompleted != true) {
             searchJob?.cancel()
         }
-
-        if (latestSearchText != searchText) {
-            latestSearchText = searchText
-            searchJob = viewModelScope.launch {
-                delay(SEARCH_DEBOUNCE_DELAY)
-                searchTrack(searchText)
+        if (searchText.isNullOrBlank()) {
+            showHistory()
+        } else {
+            if (latestSearchText != searchText) {
+                latestSearchText = searchText
+                searchJob = viewModelScope.launch {
+                    delay(SEARCH_DEBOUNCE_DELAY)
+                    searchTrack(searchText)
+                }
             }
+
         }
     }
 
     fun cancelSearch() {
         searchJob?.cancel()
+    }
+
+    fun refreshSearch() {
+        searchTrack(latestSearchText)
     }
 
     private fun searchTrack(searchRequest: String) {

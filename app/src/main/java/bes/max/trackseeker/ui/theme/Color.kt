@@ -13,4 +13,6 @@ val Pink40 = Color(0xFF7D5260)
 val YpBlack = Color(android.graphics.Color.parseColor("#1A1B22"))
 val YpBlue = Color(android.graphics.Color.parseColor("#3772E7"))
 val YpLightGray = Color(android.graphics.Color.parseColor("#E6E8EB"))
+val YpGray = Color(android.graphics.Color.parseColor("#AEAFB4"))
+
 
