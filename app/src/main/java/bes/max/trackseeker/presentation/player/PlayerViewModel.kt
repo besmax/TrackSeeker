@@ -1,7 +1,9 @@
 package bes.max.trackseeker.presentation.player
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,8 @@ import bes.max.trackseeker.domain.mediateka.FavoriteTracksInteractor
 import bes.max.trackseeker.domain.models.PlayerState
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.domain.player.PlayerInteractor
+import bes.max.trackseeker.ui.GsonTrackConverter
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,8 +24,7 @@ class PlayerViewModel(
     val track: Track,
     private val playerInteractor: PlayerInteractor,
     private val favoriteTracksInteractor: FavoriteTracksInteractor
-) :
-    ViewModel() {
+) : ViewModel() {
 
     val playerState = playerInteractor.state.asLiveData()
     private val _playingTime = MutableLiveData<String>("00:00")

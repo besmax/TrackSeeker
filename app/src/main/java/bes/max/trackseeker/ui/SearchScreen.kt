@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.search.SearchScreenState
@@ -41,9 +42,12 @@ import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun SearchScreen(
+    navController: NavController,
     searchViewModel: SearchViewModel = koinViewModel()
 ) {
     val uiState by searchViewModel.screenState.observeAsState(SearchScreenState.Default)
@@ -52,7 +56,12 @@ fun SearchScreen(
         doOnUserInput = { input -> searchViewModel.searchDebounce(input) },
         refreshSearch = { searchViewModel.refreshSearch() },
         clearHistory = { searchViewModel.clearHistory() },
-        onItemClick = { track -> searchViewModel.saveTrackToHistory(track) }
+        onItemClick = { track ->
+            searchViewModel.saveTrackToHistory(track)
+            val trackArg = GsonTrackConverter.convertTrackToJson(track)
+            var encodeTrackArg = URLEncoder.encode(trackArg, StandardCharsets.UTF_8.toString()) //Does not work without this line
+            navController.navigate("playerScreen/{track}".replace("{track}", encodeTrackArg))
+        }
     )
 }
 
@@ -62,7 +71,7 @@ fun SearchScreenContent(
     doOnUserInput: (String) -> Unit,
     refreshSearch: () -> Unit,
     clearHistory: () -> Unit,
-    onItemClick: (Track) -> Unit
+    onItemClick: (Track) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Title(text = stringResource(id = R.string.search))
