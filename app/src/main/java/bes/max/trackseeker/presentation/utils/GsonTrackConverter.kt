@@ -1,4 +1,4 @@
-package bes.max.trackseeker.ui
+package bes.max.trackseeker.presentation.utils
 
 import bes.max.trackseeker.domain.models.Track
 import com.google.gson.Gson

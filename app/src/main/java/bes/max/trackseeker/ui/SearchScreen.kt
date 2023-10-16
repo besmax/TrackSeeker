@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -38,6 +39,7 @@ import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.search.SearchScreenState
 import bes.max.trackseeker.presentation.search.SearchViewModel
+import bes.max.trackseeker.presentation.utils.GsonTrackConverter
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
@@ -59,7 +61,10 @@ fun SearchScreen(
         onItemClick = { track ->
             searchViewModel.saveTrackToHistory(track)
             val trackArg = GsonTrackConverter.convertTrackToJson(track)
-            var encodeTrackArg = URLEncoder.encode(trackArg, StandardCharsets.UTF_8.toString()) //Does not work without this line
+            var encodeTrackArg = URLEncoder.encode(
+                trackArg,
+                StandardCharsets.UTF_8.toString()
+            ) //Does not work without this line
             navController.navigate("playerScreen/{track}".replace("{track}", encodeTrackArg))
         }
     )
@@ -98,6 +103,7 @@ fun SearchScreenContent(
             is SearchScreenState.Loading -> SearchLoading()
 
             is SearchScreenState.TracksNotFound -> SearchTracksNotFound()
+
         }
     }
 }
@@ -113,7 +119,7 @@ fun UserInput(onValueChanged: (String) -> Unit) {
             text = it
             onValueChanged.invoke(it)
         },
-        label = { Text(text = stringResource(id = R.string.search)) },
+        label = { if (text.isBlank()) Text(text = stringResource(id = R.string.search)) },
         maxLines = 1,
         textStyle = TextStyle(
             fontFamily = ysDisplayFamily,
@@ -124,6 +130,7 @@ fun UserInput(onValueChanged: (String) -> Unit) {
             containerColor = YpLightGray,
             disabledIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
             textColor = Color.Black
         ),
         leadingIcon = {
@@ -137,10 +144,11 @@ fun UserInput(onValueChanged: (String) -> Unit) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_clear_text),
                     contentDescription = "clear text icon",
-                    modifier = Modifier.clickable {
-                        text = ""
-                        onValueChanged("")
-                    }
+                    modifier = Modifier
+                        .clickable {
+                            text = ""
+                            onValueChanged("")
+                        }
                 )
             }
         },
@@ -148,6 +156,11 @@ fun UserInput(onValueChanged: (String) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .onFocusChanged {
+                if (it.hasFocus && text.isBlank()) {
+                    onValueChanged.invoke(text)
+                }
+            }
     )
 }
 
