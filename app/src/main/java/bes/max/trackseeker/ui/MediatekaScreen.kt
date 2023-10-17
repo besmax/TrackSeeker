@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -79,7 +80,7 @@ fun MediatekaScreenContent(
                         fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
-                        color = YpBlack,
+                        color = colorResource(id = R.color.black_white),
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }

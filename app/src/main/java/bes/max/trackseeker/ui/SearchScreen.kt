@@ -64,7 +64,7 @@ fun SearchScreen(
             var encodeTrackArg = URLEncoder.encode(
                 trackArg,
                 StandardCharsets.UTF_8.toString()
-            ) //Does not work without this line
+            ) //Does not work without encoded value
             navController.navigate("playerScreen/{track}".replace("{track}", encodeTrackArg))
         }
     )

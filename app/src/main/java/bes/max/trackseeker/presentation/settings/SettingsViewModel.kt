@@ -24,6 +24,7 @@ class SettingsViewModel(
 
     val isNightModeActive = settingsInteractor.isNightModeActive().asLiveData(Dispatchers.IO)
 
+
     private fun setIsNightModeActive(isNightModeActive: Boolean) {
         viewModelScope.launch {
             settingsInteractor.setIsNightModeActive(isNightModeActive)
@@ -36,7 +37,7 @@ class SettingsViewModel(
             coroutineScope = viewModelScope,
             useLastParam = false,
             action = {
-                setIsNightModeActive(it)
+                setIsNightModeActiveDebounce(it)
             }
         )
         debounceSwitch.invoke(isNightModeActive)

@@ -1,5 +1,6 @@
 package bes.max.trackseeker.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -9,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +38,10 @@ fun BottomNavBar(
         Screen.SettingsScreen
     )
 
-    NavigationBar() {
+    NavigationBar(
+        modifier = Modifier
+            .background(colorResource(id = R.color.black_white))
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -69,8 +75,11 @@ fun BottomNavBar(
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    unselectedIconColor = YpBlack,
-                    selectedIconColor = YpBlue
+                    unselectedIconColor = colorResource(id = R.color.black_white),
+                    selectedIconColor = YpBlue,
+                    selectedTextColor = YpBlue,
+                    unselectedTextColor = colorResource(id = R.color.black_white),
+                    indicatorColor = Color.Transparent
                 )
             )
         }
