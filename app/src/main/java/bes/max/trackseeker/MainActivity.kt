@@ -3,59 +3,46 @@ package bes.max.trackseeker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import bes.max.trackseeker.ui.FavoriteTracksScreen
-import bes.max.trackseeker.presentation.utils.GsonTrackConverter
-import bes.max.trackseeker.ui.MediatekaScreen
-import bes.max.trackseeker.ui.PlayerScreen
-import bes.max.trackseeker.ui.SearchScreen
+import bes.max.trackseeker.ui.navigation.BottomNavBar
+import bes.max.trackseeker.ui.navigation.NavigationGraph
 import bes.max.trackseeker.ui.theme.TrackSeekerTheme
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             TrackSeekerTheme {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    val navController = rememberNavController()
+                val navController = rememberNavController()
+                val bottomBarHeight = 56.dp
+                val bottomBarOffsetHeightPx = remember { mutableFloatStateOf(0f) }
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = "mediatekaScreen",
-                        modifier = Modifier.weight(1f)
+                var buttonsVisible = remember { mutableStateOf(true) }
+
+                Scaffold(
+                    bottomBar = {
+                        BottomNavBar(
+                            navController = navController,
+                            state = buttonsVisible,
+                            modifier = Modifier
+                        )
+                    }
+                ) { paddingValues ->
+                    Box(
+                        modifier = Modifier.padding(paddingValues)
                     ) {
-                        composable(route = "searchScreen") {
-                            SearchScreen(navController = navController)
-                        }
-                        composable(
-                            route = "playerScreen/{track}",
-                            arguments = listOf(
-                                navArgument(name = "track") {
-                                    type = NavType.StringType
-                                    nullable = false
-                                }
-                            )
-                        ) {
-                            val trackArg = it.arguments?.getString("track") ?: ""
-                            val track = GsonTrackConverter.fromJsonToTrack(trackArg)
-                            PlayerScreen(
-                                track,
-                                navigateBack = { navController.popBackStack() })
-                        }
-                        composable(route = "favoriteTracksScreen") {
-                            FavoriteTracksScreen(navController = navController)
-                        }
-                        composable(route = "mediatekaScreen") {
-                            MediatekaScreen(navController = navController)
-                        }
+                        NavigationGraph(navController = navController)
                     }
                 }
             }
