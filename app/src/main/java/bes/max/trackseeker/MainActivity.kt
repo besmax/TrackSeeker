@@ -10,15 +10,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import bes.max.trackseeker.ui.navigation.BottomNavBar
 import bes.max.trackseeker.ui.navigation.NavigationGraph
+import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.TrackSeekerTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +34,16 @@ class MainActivity : ComponentActivity() {
             TrackSeekerTheme {
                 val navController = rememberNavController()
 
-                var buttonsVisible = remember { mutableStateOf(true) }
+                var buttonsVisible = rememberSaveable { mutableStateOf(true) }
+
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+                when (navBackStackEntry?.destination?.route) {
+                    Screen.SettingsScreen.route -> buttonsVisible.value = true
+                    Screen.MediatekaScreen.route -> buttonsVisible.value = true
+                    Screen.SearchScreen.route -> buttonsVisible.value = true
+                    Screen.PlayerScreen.route -> buttonsVisible.value = false
+                }
 
                 Scaffold(
                     bottomBar = {
