@@ -5,4 +5,7 @@
 
     <color name="button_background">#FFFFFFFF</color>
     <color name="button_text">#1A1B22</color>
+
+    <color name="switch_thumb">#3772E7</color>
+    <color name="switch_track">#3772E7</color>
 </resources>

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -157,6 +159,17 @@ fun SwitchSettingsSection(
                 checked = it
                 onClick.invoke(checked)
             },
+            thumbContent = {
+                SwitchDefaults.colors(
+                    checkedThumbColor = colorResource(id = R.color.switch_thumb),
+                    checkedTrackColor= colorResource(id = R.color.switch_thumb),
+                    checkedBorderColor= colorResource(id = R.color.switch_thumb),
+                    checkedIconColor = colorResource(id = R.color.switch_thumb),
+                    uncheckedThumbColor= colorResource(id = R.color.yp_gray),
+                    uncheckedTrackColor= colorResource(id = R.color.yp_gray_light),
+                    uncheckedBorderColor= colorResource(id = R.color.yp_gray_light),
+                )
+            }
         )
     }
 
