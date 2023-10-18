@@ -10,20 +10,21 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import bes.max.trackseeker.data.db.FavoriteTracksDao
 import bes.max.trackseeker.data.db.TracksDatabase
-import bes.max.trackseeker.data.network.ITunesSearchApiService
-import bes.max.trackseeker.data.network.NetworkClient
-import bes.max.trackseeker.data.search.SearchHistoryDao
-import bes.max.trackseeker.data.settings.SettingsDao
-import bes.max.trackseeker.domain.settings.ExternalNavigator
-import bes.max.trackseeker.data.network.RetrofitNetworkClient
-import bes.max.trackseeker.data.search.SearchHistoryDaoImpl
 import bes.max.trackseeker.data.mappers.TrackDbMapper
 import bes.max.trackseeker.data.mappers.TrackDtoMapper
-import bes.max.trackseeker.data.settings.SettingsDaoImpl
+import bes.max.trackseeker.data.network.ITunesSearchApiService
+import bes.max.trackseeker.data.network.NetworkClient
+import bes.max.trackseeker.data.network.RetrofitNetworkClient
+import bes.max.trackseeker.data.search.SearchHistoryDao
+import bes.max.trackseeker.data.search.SearchHistoryDaoImpl
 import bes.max.trackseeker.data.settings.ExternalNavigatorImpl
+import bes.max.trackseeker.data.settings.SettingsDao
+import bes.max.trackseeker.data.settings.SettingsDaoImpl
+import bes.max.trackseeker.domain.settings.ExternalNavigator
 import com.google.gson.Gson
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -63,8 +64,16 @@ val dataModule = module {
     singleOf(::SettingsDaoImpl) bind SettingsDao::class
 
     single<ITunesSearchApiService> {
+
+        val interceptor = HttpLoggingInterceptor()
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val okHttpClient = OkHttpClient().newBuilder()
+            .addInterceptor(interceptor = interceptor)
+            .build()
+
         Retrofit.Builder()
             .baseUrl(ITUNES_BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ITunesSearchApiService::class.java)

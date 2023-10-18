@@ -47,14 +47,6 @@ fun Title(
     }
 }
 
-
-@Composable
-@Preview
-fun TitlePreview() {
-    Title(text = "Поиск")
-}
-
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier = Modifier) {
@@ -117,28 +109,6 @@ fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier
     }
 }
 
-//@Composable
-//@Preview
-//fun TrackListItemPreview() {
-//    TrackListItem(
-//        Track(
-//            trackId = 111111L,
-//            trackName = "Track Name",
-//            artistName = "artistName",
-//            trackTimeMillis = 1L,
-//            artworkUrl100 = "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/a4/54/ca/a454caaa-e557-33cb-a243-f7208666c2cc/780163512526.jpg/100x100bb.jpg",
-//            collectionName = "collectionName",
-//            releaseDate = "releaseDate",
-//            primaryGenreName = "primaryGenreName",
-//            country = "country",
-//            previewUrl = "previewUrl",
-//            trackTime = "trackTime",
-//            bigCover = "https://is1-ssl.mzstatic.com/image/thumb/Music118/v4/a4/54/ca/a454caaa-e557-33cb-a243-f7208666c2cc/780163512526.jpg/512x512bb.jpg",
-//            year = "year"
-//        )
-//    )
-//}
-
 @Composable
 fun TrackList(tracks: List<Track>, onItemClick: (Track) -> Unit, isReverse: Boolean) {
     LazyColumn(reverseLayout = isReverse) {
@@ -146,4 +116,10 @@ fun TrackList(tracks: List<Track>, onItemClick: (Track) -> Unit, isReverse: Bool
             TrackListItem(track, onItemClick)
         }
     }
+}
+
+@Composable
+@Preview
+fun TitlePreview() {
+    Title(text = "Поиск")
 }
