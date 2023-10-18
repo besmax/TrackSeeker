@@ -34,7 +34,7 @@ fun MediatekaScreen(
 ) {
 
     MediatekaScreenContent(
-        navController
+        navController = navController
     )
 }
 

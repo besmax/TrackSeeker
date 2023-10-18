@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.mediateka.favorite.FavoriteScreenState
 import bes.max.trackseeker.presentation.mediateka.favorite.FavoriteTracksViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
@@ -39,6 +42,10 @@ fun FavoriteTracksScreen(
 
     val uiState by favoriteViewModel.screenState.observeAsState(initial = FavoriteScreenState.Empty)
 
+    LaunchedEffect(key1 = Unit) {
+        favoriteViewModel.getFavoriteTracks()
+    }
+
     FavoriteTracksScreenContent(
         uiState = uiState,
         onItemClick = { track ->
@@ -47,7 +54,7 @@ fun FavoriteTracksScreen(
                 trackArg,
                 StandardCharsets.UTF_8.toString()
             ) //Does not work without this line
-            navController.navigate("playerScreen/{track}".replace("{track}", encodeTrackArg))
+            navController.navigate(Screen.PlayerScreen.route.replace("{track}", encodeTrackArg))
         }
     )
 

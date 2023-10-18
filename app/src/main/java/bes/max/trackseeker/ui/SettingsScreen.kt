@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -21,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,7 +38,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel = koinViewModel()
+     settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
 
     val link = stringResource(id = R.string.link_for_app_share)
@@ -159,6 +162,8 @@ fun SwitchSettingsSection(
                 checked = it
                 onClick.invoke(checked)
             },
+            modifier = Modifier.width(32.dp)
+                .height(18.dp),
             thumbContent = {
                 SwitchDefaults.colors(
                     checkedThumbColor = colorResource(id = R.color.switch_thumb),

@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -54,6 +55,12 @@ fun PlayerScreen(
     val playerState by playerViewModel.playerState.observeAsState(PlayerState.STATE_DEFAULT)
     val playingTime by playerViewModel.playingTime.observeAsState("00:00")
     val isFavorite by playerViewModel.isFavorite.observeAsState(false)
+
+    DisposableEffect(key1 = Unit) {
+        onDispose {
+            playerViewModel.releasePlayer()
+        }
+    }
 
     PlayerScreenContent(
         playerState = playerState,
