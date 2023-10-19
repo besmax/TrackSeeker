@@ -24,23 +24,23 @@ class App : Application() {
             modules(dataModule, domainModule, viewModelModule, repositoryModule)
         }
 
-        val settingsDao: SettingsDao = getKoin().get()
-        kotlinx.coroutines.MainScope().launch {
-            Log.d(
-                "AppClass",
-                "isNightModeActiveDefault returns: ${settingsDao.isNightModeActive()}"
-            )
-            settingsDao.isNightModeActive().asLiveData().observeForever { switchTheme(it) }
-        }
+//        val settingsDao: SettingsDao = getKoin().get()
+//        kotlinx.coroutines.MainScope().launch {
+//            Log.d(
+//                "AppClass",
+//                "isNightModeActiveDefault returns: ${settingsDao.isNightModeActive()}"
+//            )
+//            settingsDao.isNightModeActive().asLiveData().observeForever { switchTheme(it) }
+//        }
 
     }
 
-    private fun switchTheme(darkThemeEnabled: Boolean) {
-        AppCompatDelegate.setDefaultNightMode(
-            if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-
-        )
-
-    }
+//    private fun switchTheme(darkThemeEnabled: Boolean) {
+//        AppCompatDelegate.setDefaultNightMode(
+//            if (darkThemeEnabled) AppCompatDelegate.MODE_NIGHT_YES
+//            else AppCompatDelegate.MODE_NIGHT_NO
+//
+//        )
+//
+//    }
 }

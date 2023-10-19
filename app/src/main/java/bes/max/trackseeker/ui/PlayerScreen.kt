@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -123,7 +124,7 @@ fun PlayerScreenContent(
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 22.sp,
-            color = YpBlack,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(start = 24.dp, bottom = 12.dp, end = 24.dp)
@@ -135,7 +136,7 @@ fun PlayerScreenContent(
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
-            color = YpBlack,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
@@ -195,7 +196,7 @@ fun PlayerScreenContent(
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
-            color = YpBlack,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 20.dp)
         )
@@ -230,7 +231,7 @@ fun TrackInfo(title: String, content: String) {
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 13.sp,
-            color = YpBlack,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
             maxLines = 1
         )

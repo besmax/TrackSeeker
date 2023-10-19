@@ -22,7 +22,7 @@ class SettingsViewModel(
     private val _showingToast = MutableLiveData<Int>()
     val showingToast: LiveData<Int> = _showingToast
 
-    val isNightModeActive = settingsInteractor.isNightModeActive().asLiveData(Dispatchers.IO)
+    val isNightModeActive = settingsInteractor.isNightModeActive()
 
 
     private fun setIsNightModeActive(isNightModeActive: Boolean) {
@@ -37,7 +37,7 @@ class SettingsViewModel(
             coroutineScope = viewModelScope,
             useLastParam = false,
             action = {
-                setIsNightModeActiveDebounce(it)
+                setIsNightModeActive(it)
             }
         )
         debounceSwitch.invoke(isNightModeActive)

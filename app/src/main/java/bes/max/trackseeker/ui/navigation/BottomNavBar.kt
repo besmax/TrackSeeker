@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -94,11 +95,11 @@ fun BottomNavBar(
                                 }
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                unselectedIconColor = colorResource(id = R.color.black_white),
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurface,
                                 selectedIconColor = YpBlue,
                                 selectedTextColor = YpBlue,
-                                unselectedTextColor = colorResource(id = R.color.black_white),
-                                indicatorColor = colorResource(id = R.color.white_black)
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                indicatorColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
                     }

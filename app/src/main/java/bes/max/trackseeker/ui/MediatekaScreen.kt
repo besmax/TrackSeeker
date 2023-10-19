@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -80,7 +81,7 @@ fun MediatekaScreenContent(
                         fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         textAlign = TextAlign.Center,
-                        color = colorResource(id = R.color.black_white),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(vertical = 16.dp)
                     )
                 }
