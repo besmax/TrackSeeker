@@ -1,5 +1,6 @@
 package bes.max.trackseeker.ui
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -40,12 +41,11 @@ import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.search.SearchScreenState
 import bes.max.trackseeker.presentation.search.SearchViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @Composable
 fun SearchScreen(
@@ -61,11 +61,8 @@ fun SearchScreen(
         onItemClick = { track ->
             searchViewModel.saveTrackToHistory(track)
             val trackArg = GsonTrackConverter.convertTrackToJson(track)
-            var encodeTrackArg = URLEncoder.encode(
-                trackArg,
-                StandardCharsets.UTF_8.toString()
-            ) //Does not work without encoded value
-            navController.navigate("playerScreen/{track}".replace("{track}", encodeTrackArg))
+            var encodeTrackArg = Uri.encode(trackArg)
+            navController.navigate(Screen.PlayerScreen.route.replace("{track}", encodeTrackArg))
         }
     )
 }

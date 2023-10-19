@@ -1,5 +1,6 @@
 package bes.max.trackseeker.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -31,7 +32,8 @@ fun NavigationGraph(navController: NavHostController) {
                 }
             )
         ) {
-            val trackArg = it.arguments?.getString("track") ?: ""
+            val encodedTrackArg = it.arguments?.getString("track") ?: ""
+            val trackArg = Uri.decode(encodedTrackArg)
             val track = GsonTrackConverter.fromJsonToTrack(trackArg)
             PlayerScreen(
                 track,
