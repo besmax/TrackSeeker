@@ -1,4 +1,4 @@
-package bes.max.trackseeker.domain.mediateka
+package bes.max.trackseeker.domain.mediateka.favorite
 
 import bes.max.trackseeker.domain.models.Track
 import kotlinx.coroutines.flow.Flow

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import bes.max.trackseeker.domain.mediateka.FavoriteTracksInteractor
+import bes.max.trackseeker.domain.mediateka.favorite.FavoriteTracksInteractor
 import bes.max.trackseeker.domain.models.PlayerState
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.domain.player.PlayerInteractor

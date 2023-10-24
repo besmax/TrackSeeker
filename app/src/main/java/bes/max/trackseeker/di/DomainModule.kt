@@ -9,8 +9,8 @@ import bes.max.trackseeker.domain.settings.SettingsInteractor
 import bes.max.trackseeker.domain.settings.SettingsInteractorImpl
 import bes.max.trackseeker.domain.settings.SharingInteractor
 import bes.max.trackseeker.domain.settings.SharingInteractorImpl
-import bes.max.trackseeker.domain.mediateka.FavoriteTracksInteractor
-import bes.max.trackseeker.domain.mediateka.FavoriteTracksInteractorImpl
+import bes.max.trackseeker.domain.mediateka.favorite.FavoriteTracksInteractor
+import bes.max.trackseeker.domain.mediateka.favorite.FavoriteTracksInteractorImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module

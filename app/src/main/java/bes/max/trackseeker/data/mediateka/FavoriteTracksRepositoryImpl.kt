@@ -2,7 +2,7 @@ package bes.max.trackseeker.data.mediateka
 
 import bes.max.trackseeker.data.db.dao.FavoriteTracksDao
 import bes.max.trackseeker.data.mappers.TrackDbMapper
-import bes.max.trackseeker.domain.mediateka.FavoriteTracksRepository
+import bes.max.trackseeker.domain.mediateka.favorite.FavoriteTracksRepository
 import bes.max.trackseeker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
