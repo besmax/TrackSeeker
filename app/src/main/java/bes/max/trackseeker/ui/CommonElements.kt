@@ -24,9 +24,7 @@ import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
+import coil.compose.AsyncImage
 
 @Composable
 fun Title(
@@ -47,7 +45,6 @@ fun Title(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier = Modifier) {
     Row(
@@ -58,14 +55,14 @@ fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.height(20.dp))
-        GlideImage(
+        AsyncImage(
             model = track.bigCover,
             contentDescription = track.trackName,
+            error = painterResource(id = R.drawable.ic_picture_not_found),
+            placeholder = painterResource(id = R.drawable.ic_picture_not_found),
             modifier = Modifier
                 .width(45.dp)
                 .height(45.dp),
-            failure = placeholder(painterResource(id = R.drawable.ic_picture_not_found)),
-            loading = placeholder(painterResource(id = R.drawable.ic_picture_not_found))
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {

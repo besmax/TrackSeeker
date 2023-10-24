@@ -1,5 +1,6 @@
 package bes.max.trackseeker.ui
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,8 +31,6 @@ import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @Composable
 fun FavoriteTracksScreen(
@@ -50,10 +48,7 @@ fun FavoriteTracksScreen(
         uiState = uiState,
         onItemClick = { track ->
             val trackArg = GsonTrackConverter.convertTrackToJson(track)
-            var encodeTrackArg = URLEncoder.encode(
-                trackArg,
-                StandardCharsets.UTF_8.toString()
-            ) //Does not work without this line
+            var encodeTrackArg = Uri.encode(trackArg) //Does not work without this line
             navController.navigate(Screen.PlayerScreen.route.replace("{track}", encodeTrackArg))
         }
     )

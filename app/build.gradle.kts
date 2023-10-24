@@ -77,8 +77,7 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 

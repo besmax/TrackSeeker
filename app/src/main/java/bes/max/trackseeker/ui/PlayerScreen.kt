@@ -3,7 +3,6 @@ package bes.max.trackseeker.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,13 +34,9 @@ import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.PlayerState
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.player.PlayerViewModel
-import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.RequestBuilderTransform
-import com.bumptech.glide.integration.compose.placeholder
+import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,7 +73,6 @@ fun PlayerScreen(
 
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PlayerScreenContent(
     playerState: PlayerState,
@@ -107,7 +101,7 @@ fun PlayerScreenContent(
                 contentDescription = "Back arrow",
             )
         }
-        GlideImage(
+        AsyncImage(
             model = track.bigCover,
             contentDescription = track.trackName,
             modifier = Modifier
@@ -115,8 +109,8 @@ fun PlayerScreenContent(
                 .width(312.dp)
                 .height(312.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            failure = placeholder(painterResource(id = R.drawable.ic_picture_not_found)),
-            loading = placeholder(painterResource(id = R.drawable.ic_picture_not_found)),
+            error = painterResource(id = R.drawable.ic_picture_not_found),
+            placeholder = painterResource(id = R.drawable.ic_picture_not_found),
         )
 
         Text(
