@@ -1,6 +1,6 @@
 package bes.max.trackseeker.data.mappers
 
-import bes.max.trackseeker.data.db.TrackEntity
+import bes.max.trackseeker.data.db.entities.TrackEntity
 import bes.max.trackseeker.domain.models.Track
 
 class TrackDbMapper {

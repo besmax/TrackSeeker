@@ -1,4 +1,4 @@
-package bes.max.trackseeker.data.db
+package bes.max.trackseeker.data.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,10 +1,11 @@
-package bes.max.trackseeker.data.db
+package bes.max.trackseeker.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import bes.max.trackseeker.data.db.entities.TrackEntity
 
 @Dao
 interface FavoriteTracksDao {
