@@ -1,4 +1,4 @@
-package bes.max.trackseeker.ui
+package bes.max.trackseeker.ui.search
 
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -38,9 +38,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
-import bes.max.trackseeker.presentation.search.SearchScreenState
 import bes.max.trackseeker.presentation.search.SearchViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.Title
+import bes.max.trackseeker.ui.TrackList
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpLightGray

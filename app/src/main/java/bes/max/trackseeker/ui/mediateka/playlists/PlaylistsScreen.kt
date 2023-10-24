@@ -1,4 +1,4 @@
-package bes.max.trackseeker.ui
+package bes.max.trackseeker.ui.mediateka.playlists
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

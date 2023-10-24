@@ -1,4 +1,4 @@
-package bes.max.trackseeker.ui
+package bes.max.trackseeker.ui.mediateka.favorite
 
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -24,9 +24,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
-import bes.max.trackseeker.presentation.mediateka.favorite.FavoriteScreenState
+import bes.max.trackseeker.ui.mediateka.favorite.FavoriteScreenState
 import bes.max.trackseeker.presentation.mediateka.favorite.FavoriteTracksViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.TrackList
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.ysDisplayFamily

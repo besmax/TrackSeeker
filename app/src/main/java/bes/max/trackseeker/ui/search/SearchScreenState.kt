@@ -1,4 +1,4 @@
-package bes.max.trackseeker.presentation.search
+package bes.max.trackseeker.ui.search
 
 import bes.max.trackseeker.domain.models.Track
 

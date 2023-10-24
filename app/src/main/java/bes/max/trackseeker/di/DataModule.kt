@@ -10,8 +10,10 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import bes.max.trackseeker.data.db.dao.FavoriteTracksDao
 import bes.max.trackseeker.data.db.TracksDatabase
+import bes.max.trackseeker.data.db.dao.PlaylistsDao
 import bes.max.trackseeker.data.mappers.TrackDbMapper
 import bes.max.trackseeker.data.mappers.TrackDtoMapper
+import bes.max.trackseeker.data.mediateka.ImageDaoImpl
 import bes.max.trackseeker.data.network.ITunesSearchApiService
 import bes.max.trackseeker.data.network.NetworkClient
 import bes.max.trackseeker.data.network.RetrofitNetworkClient
@@ -20,6 +22,7 @@ import bes.max.trackseeker.data.search.SearchHistoryDaoImpl
 import bes.max.trackseeker.data.settings.ExternalNavigatorImpl
 import bes.max.trackseeker.data.settings.SettingsDao
 import bes.max.trackseeker.data.settings.SettingsDaoImpl
+import bes.max.trackseeker.domain.mediateka.playlist.ImageDao
 import bes.max.trackseeker.domain.settings.ExternalNavigator
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
@@ -63,6 +66,8 @@ val dataModule = module {
 
     singleOf(::SettingsDaoImpl) bind SettingsDao::class
 
+    singleOf(::ImageDaoImpl) bind ImageDao::class
+
     single<ITunesSearchApiService> {
 
         val interceptor = HttpLoggingInterceptor()
@@ -90,10 +95,20 @@ val dataModule = module {
         }
     }
 
-    single<FavoriteTracksDao> {
+    single {
         Room.databaseBuilder(androidContext(), TracksDatabase::class.java, "database")
             .fallbackToDestructiveMigration()
-            .build().favoriteTracksDao()
+            .build()
+    }
+
+    single<FavoriteTracksDao> {
+        val database = get<TracksDatabase>()
+        database.favoriteTracksDao()
+    }
+
+    single<PlaylistsDao> {
+        val database = get<TracksDatabase>()
+        database.playlistDao()
     }
 
     factoryOf(::TrackDbMapper)

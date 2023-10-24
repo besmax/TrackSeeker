@@ -9,6 +9,7 @@ import bes.max.trackseeker.domain.models.Resource
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.domain.search.SearchHistoryInteractor
 import bes.max.trackseeker.domain.search.SearchInNetworkUseCase
+import bes.max.trackseeker.ui.search.SearchScreenState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

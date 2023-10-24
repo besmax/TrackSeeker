@@ -1,4 +1,4 @@
-package bes.max.trackseeker.presentation.mediateka.favorite
+package bes.max.trackseeker.ui.mediateka.favorite
 
 import bes.max.trackseeker.domain.models.Track
 

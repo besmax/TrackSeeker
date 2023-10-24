@@ -11,6 +11,8 @@ import bes.max.trackseeker.domain.settings.SharingInteractor
 import bes.max.trackseeker.domain.settings.SharingInteractorImpl
 import bes.max.trackseeker.domain.mediateka.favorite.FavoriteTracksInteractor
 import bes.max.trackseeker.domain.mediateka.favorite.FavoriteTracksInteractorImpl
+import bes.max.trackseeker.domain.mediateka.playlist.PlaylistInteractor
+import bes.max.trackseeker.domain.mediateka.playlist.PlaylistInteractorImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -28,5 +30,7 @@ val domainModule = module {
     factoryOf(::SharingInteractorImpl) bind SharingInteractor::class
 
     factoryOf(::FavoriteTracksInteractorImpl) bind FavoriteTracksInteractor::class
+
+    factoryOf(::PlaylistInteractorImpl) bind PlaylistInteractor::class
 
 }
