@@ -42,8 +42,8 @@ fun BottomNavBar(
 ) {
 
     val screens = listOf(
-        Screen.MediatekaScreen,
         Screen.SearchScreen,
+        Screen.MediatekaScreen,
         Screen.SettingsScreen
     )
     

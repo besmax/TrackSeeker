@@ -7,7 +7,7 @@ import bes.max.trackseeker.data.db.dao.PlaylistsDao
 import bes.max.trackseeker.data.db.entities.PlaylistEntity
 import bes.max.trackseeker.data.db.entities.TrackEntity
 
-@Database(version = 2, entities = [TrackEntity::class, PlaylistEntity::class], exportSchema = false)
+@Database(version = 3, entities = [TrackEntity::class, PlaylistEntity::class], exportSchema = false)
 abstract class TracksDatabase : RoomDatabase() {
 
     abstract fun favoriteTracksDao(): FavoriteTracksDao

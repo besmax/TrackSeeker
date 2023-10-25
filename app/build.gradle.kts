@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "bes.max.trackseeker"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -58,6 +58,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.wear.compose:compose-material3:1.0.0-alpha14")
 
 
     testImplementation("junit:junit:4.13.2")

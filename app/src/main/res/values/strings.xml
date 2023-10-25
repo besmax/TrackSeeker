@@ -37,4 +37,7 @@
     <string name="mediateka_tab_title_favorite_tracks">Избранные треки</string>
     <string name="mediateka_tab_title_playlist">Плейлисты</string>
     <string name="player">Плеер</string>
+
+    <string name="new_playlist">Новый плейлист</string>
+
 </resources>
