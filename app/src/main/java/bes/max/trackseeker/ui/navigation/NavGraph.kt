@@ -8,9 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
-import bes.max.trackseeker.ui.MediatekaScreen
+import bes.max.trackseeker.ui.mediateka.MediatekaScreen
 import bes.max.trackseeker.ui.SettingsScreen
 import bes.max.trackseeker.ui.mediateka.favorite.FavoriteTracksScreen
+import bes.max.trackseeker.ui.mediateka.newplaylist.NewPlaylistScreen
 import bes.max.trackseeker.ui.player.PlayerScreen
 import bes.max.trackseeker.ui.search.SearchScreen
 
@@ -44,6 +45,21 @@ fun NavigationGraph(navController: NavHostController) {
         }
         composable(route = Screen.MediatekaScreen.route) {
             MediatekaScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.NewPlaylistScreen.route,
+            arguments = listOf(
+                navArgument(name = "track") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )) {
+            val encodedTrackArg = it.arguments?.getString("track")
+            NewPlaylistScreen(
+                track = encodedTrackArg,
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(route = Screen.SettingsScreen.route) {
             SettingsScreen()

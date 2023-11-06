@@ -18,14 +18,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import bes.max.trackseeker.R
+import bes.max.trackseeker.presentation.mediateka.playlists.PlaylistsViewModel
+import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun PlaylistsScreen() {
+fun PlaylistsScreen(
+    navController: NavController,
+    playlistsViewModel: PlaylistsViewModel = koinViewModel()
+) {
 
     PlaylistsScreenContent(
-        addPlaylist = { /*TODO add logic*/ }
+        addPlaylist = { navController.navigate(Screen.NewPlaylistScreen.route) }
     )
 }
 
