@@ -1,7 +1,9 @@
 package bes.max.trackseeker.ui.mediateka.newplaylist
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +37,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -48,6 +51,7 @@ import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
+import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -59,13 +63,14 @@ fun NewPlaylistScreen(
 
     var name: String? = null
     var description: String? = null
+    var uri: Uri? = null
     val createPlaylist = {
-        name?.let {name ->
+        name?.let { name ->
             newPlaylistViewModel.createPlaylist(
                 name = name,
                 description = description,
                 trackArg = track,
-                uri = null
+                uri = uri
             )
         }
     }
@@ -74,7 +79,11 @@ fun NewPlaylistScreen(
         navigateBack = { navigateBack() },
         fillName = { name = it },
         fillDescription = { description = it },
-        doOnButtonClick = { createPlaylist() }
+        fillUri = { uri = it },
+        doOnButtonClick = {
+            createPlaylist()
+            navigateBack()
+        }
     )
 }
 
@@ -83,7 +92,9 @@ fun NewPlaylistScreenContent(
     navigateBack: () -> Unit,
     fillName: (String) -> Unit,
     fillDescription: (String) -> Unit,
+    fillUri: (Uri?) -> Unit,
     doOnButtonClick: () -> Unit,
+
 ) {
     var buttonEnabled by remember { mutableStateOf(false) }
 
@@ -98,7 +109,7 @@ fun NewPlaylistScreenContent(
         )
 
         PlaylistCoverSection(
-            doOnClick = { }
+            doOnClick = { fillUri(it) }
         )
 
         UserInput(
@@ -118,12 +129,11 @@ fun NewPlaylistScreenContent(
 
         NewPlaylistScreenButton(
             titleRes = R.string.Create,
-            doOnButtonClick = { doOnButtonClick() }
+            doOnButtonClick = { doOnButtonClick() },
+            enabled = buttonEnabled
         )
 
     }
-
-
 }
 
 @Composable
@@ -162,8 +172,16 @@ fun TitleWithArrow(
 
 @Composable
 fun PlaylistCoverSection(
-    doOnClick: () -> Unit,
+    doOnClick: (Uri?) -> Unit,
 ) {
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+            doOnClick(uri)
+        }
 
     val stroke = Stroke(
         width = 4f,
@@ -177,16 +195,23 @@ fun PlaylistCoverSection(
             .clip(RoundedCornerShape(8.dp))
             .drawBehind {
                 drawRoundRect(color = YpGray, style = stroke)
+            }
+            .clickable {
+                launcher.launch("image/*")
             },
         contentAlignment = Alignment.Center
     ) {
 
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-            Image(
-                painter = painterResource(
-                    id = R.drawable.img_new_playlist_placeholder
-                ),
-                contentDescription = "Default playlist cover"
+
+            AsyncImage(
+                model = imageUri,
+                contentDescription = "playlist cover",
+                error = painterResource(id = R.drawable.playlist_placeholder_grid),
+                placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
+                modifier = Modifier.aspectRatio(1f),
+                contentScale = ContentScale.FillBounds
+
             )
         }
     }

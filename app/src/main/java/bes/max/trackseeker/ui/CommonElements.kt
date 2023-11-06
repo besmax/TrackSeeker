@@ -4,12 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
+import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
@@ -108,13 +112,32 @@ fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier
 
 @Composable
 fun TrackList(tracks: List<Track>, onItemClick: (Track) -> Unit, isReverse: Boolean) {
-    LazyColumn(reverseLayout = isReverse) {
+    LazyColumn(
+        reverseLayout = isReverse,
+        modifier = Modifier.padding(top = 16.dp)
+        ) {
         items(
             items = tracks,
             key = { track -> track.trackId }
         ) { track ->
             TrackListItem(track, onItemClick)
         }
+    }
+}
+
+@Composable
+fun Loading() {
+    Column(
+        modifier = Modifier
+            .padding(top = 140.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .size(44.dp),
+            color = YpBlue,
+        )
     }
 }
 

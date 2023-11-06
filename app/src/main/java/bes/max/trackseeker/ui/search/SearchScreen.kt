@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -42,8 +40,8 @@ import bes.max.trackseeker.presentation.search.SearchViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
 import bes.max.trackseeker.ui.Title
 import bes.max.trackseeker.ui.TrackList
+import bes.max.trackseeker.ui.Loading
 import bes.max.trackseeker.ui.navigation.Screen
-import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
@@ -98,7 +96,7 @@ fun SearchScreenContent(
                 isReverse = false
             )
 
-            is SearchScreenState.Loading -> SearchLoading()
+            is SearchScreenState.Loading -> Loading()
 
             is SearchScreenState.TracksNotFound -> SearchTracksNotFound()
 
@@ -197,22 +195,6 @@ fun SearchError(refreshSearch: () -> Unit) {
                 fontSize = 14.sp
             )
         }
-    }
-}
-
-@Composable
-fun SearchLoading() {
-    Column(
-        modifier = Modifier
-            .padding(top = 140.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .size(44.dp),
-            color = YpBlue,
-        )
     }
 }
 
