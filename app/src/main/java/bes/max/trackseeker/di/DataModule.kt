@@ -8,9 +8,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import bes.max.trackseeker.data.db.TracksDatabase
-import bes.max.trackseeker.data.db.dao.FavoriteTracksDao
+import bes.max.trackseeker.data.db.AppDatabase
+import bes.max.trackseeker.data.db.dao.PlaylistTrackDao
 import bes.max.trackseeker.data.db.dao.PlaylistsDao
+import bes.max.trackseeker.data.db.dao.TrackDao
 import bes.max.trackseeker.data.mappers.TrackDbMapper
 import bes.max.trackseeker.data.mappers.TrackDtoMapper
 import bes.max.trackseeker.data.mediateka.ImageDaoImpl
@@ -53,7 +54,6 @@ val dataModule = module {
 
     singleOf(::RetrofitNetworkClient) bind NetworkClient::class
 
-
     single<SharedPreferences> {
         androidContext().getSharedPreferences(SHARED_PREF_KEY, 0)
     }
@@ -69,22 +69,14 @@ val dataModule = module {
     singleOf(::ImageDaoImpl) bind ImageDao::class
 
     single<ITunesSearchApiService> {
-
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        val okHttpClient = OkHttpClient().newBuilder()
-            .addInterceptor(interceptor = interceptor)
-            .build()
-
         Retrofit.Builder()
             .baseUrl(ITUNES_BASE_URL)
-            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ITunesSearchApiService::class.java)
     }
 
-    factory {
+    single {
         MediaPlayer().apply {
             setAudioAttributes(
                 AudioAttributes.Builder()
@@ -96,19 +88,24 @@ val dataModule = module {
     }
 
     single {
-        Room.databaseBuilder(androidContext(), TracksDatabase::class.java, "database")
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database")
             .fallbackToDestructiveMigration()
             .build()
     }
 
-    single<FavoriteTracksDao> {
-        val database = get<TracksDatabase>()
-        database.favoriteTracksDao()
+    single<TrackDao> {
+        val database = get<AppDatabase>()
+        database.trackDao()
     }
 
     single<PlaylistsDao> {
-        val database = get<TracksDatabase>()
-        database.playlistDao()
+        val database = get<AppDatabase>()
+        database.playlistsDao()
+    }
+
+    single<PlaylistTrackDao> {
+        val database = get<AppDatabase>()
+        database.playlistTrackDao()
     }
 
     factoryOf(::TrackDbMapper)

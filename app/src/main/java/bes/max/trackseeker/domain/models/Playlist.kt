@@ -1,10 +1,10 @@
 package bes.max.trackseeker.domain.models
 
 data class Playlist(
-    val id: Int = 0,
+    val id: Long = 0,
     val name: String,
     val description: String?,
     val coverPath: String?,
     val tracks: List<Track>?,
-    val tracksNumber: Int = tracks?.size ?: 0
+    val tracksNumber: Int = 0
 )
