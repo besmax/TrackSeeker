@@ -1,7 +1,7 @@
 package bes.max.trackseeker.domain.search
 
-import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.domain.models.Resource
+import bes.max.trackseeker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 interface TracksRepository {

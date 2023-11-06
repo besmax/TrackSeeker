@@ -30,7 +30,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import bes.max.trackseeker.R
-import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 

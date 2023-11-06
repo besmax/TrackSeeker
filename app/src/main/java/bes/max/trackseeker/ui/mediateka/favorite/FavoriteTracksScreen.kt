@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
-import bes.max.trackseeker.ui.mediateka.favorite.FavoriteScreenState
 import bes.max.trackseeker.presentation.mediateka.favorite.FavoriteTracksViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
 import bes.max.trackseeker.ui.TrackList
@@ -64,7 +63,7 @@ fun FavoriteTracksScreenContent(
 
     when (uiState) {
         is FavoriteScreenState.Empty -> EmptyFavoriteTracks()
-        is FavoriteScreenState.Loading -> Loading()
+        is FavoriteScreenState.Loading -> FavoriteTracksLoading()
         is FavoriteScreenState.Content -> TrackList(
             tracks = uiState.tracks,
             onItemClick = onItemClick,
@@ -97,7 +96,7 @@ fun EmptyFavoriteTracks() {
 }
 
 @Composable
-fun Loading() {
+fun FavoriteTracksLoading() {
     Column(
         modifier = Modifier
             .padding(top = 140.dp)

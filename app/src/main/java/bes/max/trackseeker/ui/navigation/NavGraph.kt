@@ -8,11 +8,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
-import bes.max.trackseeker.ui.mediateka.favorite.FavoriteTracksScreen
 import bes.max.trackseeker.ui.MediatekaScreen
+import bes.max.trackseeker.ui.SettingsScreen
+import bes.max.trackseeker.ui.mediateka.favorite.FavoriteTracksScreen
 import bes.max.trackseeker.ui.player.PlayerScreen
 import bes.max.trackseeker.ui.search.SearchScreen
-import bes.max.trackseeker.ui.SettingsScreen
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {

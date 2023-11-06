@@ -4,14 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.EmailData
 import bes.max.trackseeker.domain.settings.SettingsInteractor
 import bes.max.trackseeker.domain.settings.SharingInteractor
 import bes.max.trackseeker.presentation.utils.debounce
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
