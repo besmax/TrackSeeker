@@ -19,11 +19,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +52,7 @@ import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerScreen(
     track: Track,
@@ -58,6 +64,11 @@ fun PlayerScreen(
     val playerState by playerViewModel.playerState.observeAsState(PlayerState.STATE_DEFAULT)
     val playingTime by playerViewModel.playingTime.observeAsState("00:00")
     val isFavorite by playerViewModel.isFavorite.observeAsState(false)
+
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     DisposableEffect(key1 = Unit) {
         onDispose {
@@ -73,10 +84,20 @@ fun PlayerScreen(
         navigateBack = navigateBack,
         playbackControl = { playerViewModel.playbackControl() },
         addOrDeleteFromFavorite = {
-            if(isFavorite) playerViewModel.deleteFromFavorite(track)
+            if (isFavorite) playerViewModel.deleteFromFavorite(track)
             else playerViewModel.addToFavorite(track)
+        },
+        addToPlaylist = {
+            isSheetOpen = true
         }
     )
+
+    if (isSheetOpen) {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = { /*TODO*/ }
+        ) {  }
+    }
 
 }
 
@@ -88,7 +109,8 @@ fun PlayerScreenContent(
     track: Track,
     navigateBack: () -> Unit,
     playbackControl: () -> Unit,
-    addOrDeleteFromFavorite: () -> Unit
+    addOrDeleteFromFavorite: () -> Unit,
+    addToPlaylist: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -254,6 +276,8 @@ fun PlayerBottomSheetContent(
                 .align(Alignment.CenterHorizontally)
                 .clip(shape = RoundedCornerShape(4.dp))
         )
+
+
     }
 }
 

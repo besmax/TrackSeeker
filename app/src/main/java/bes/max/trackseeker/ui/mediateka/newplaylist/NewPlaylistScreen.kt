@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bes.max.trackseeker.R
 import bes.max.trackseeker.presentation.mediateka.newplaylist.NewPlaylistViewModel
+import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.YpLightGray
@@ -237,12 +238,15 @@ fun UserInput(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp
         ),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = YpLightGray,
-            disabledIndicatorColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = YpLightGray,
+            unfocusedContainerColor = YpLightGray,
+            disabledContainerColor = YpLightGray,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            textColor = Color.Black
+            disabledIndicatorColor = Color.Transparent,
+            focusedTextColor = YpBlack,
+            unfocusedTextColor = YpBlack
         ),
         trailingIcon = {
             if (text.isNotBlank()) {

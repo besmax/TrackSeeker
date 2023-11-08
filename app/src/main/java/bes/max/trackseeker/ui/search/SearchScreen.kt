@@ -42,6 +42,7 @@ import bes.max.trackseeker.ui.Title
 import bes.max.trackseeker.ui.TrackList
 import bes.max.trackseeker.ui.Loading
 import bes.max.trackseeker.ui.navigation.Screen
+import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
@@ -122,12 +123,15 @@ fun UserInput(onValueChanged: (String) -> Unit) {
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp
         ),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = YpLightGray,
-            disabledIndicatorColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = YpLightGray,
+            unfocusedContainerColor = YpLightGray,
+            disabledContainerColor = YpLightGray,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            textColor = Color.Black
+            disabledIndicatorColor = Color.Transparent,
+            focusedTextColor = YpBlack,
+            unfocusedTextColor = YpBlack
         ),
         leadingIcon = {
             Icon(
