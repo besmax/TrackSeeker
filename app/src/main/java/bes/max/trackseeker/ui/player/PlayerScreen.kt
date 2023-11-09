@@ -1,6 +1,7 @@
 package bes.max.trackseeker.ui.player
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,12 +26,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,6 +60,7 @@ import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,36 +83,18 @@ fun PlayerScreen(
         mutableStateOf(false)
     }
 
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val bottomSheetScope = rememberCoroutineScope()
+
     DisposableEffect(key1 = Unit) {
         onDispose {
             playerViewModel.releasePlayer()
         }
     }
 
-    PlayerScreenContent(
-        playerState = playerState,
-        playingTime = playingTime,
-        isFavorite = isFavorite,
-        track = track,
-        navigateBack = { navController.popBackStack() },
-        playbackControl = { playerViewModel.playbackControl() },
-        addOrDeleteFromFavorite = {
-            if (isFavorite) playerViewModel.deleteFromFavorite(track)
-            else playerViewModel.addToFavorite(track)
-        },
-        addToPlaylist = { playlist ->
-            playerViewModel.addTrackToPlaylist(playlist)
-        },
-        openBottomSheet = {
-            isSheetOpen = true
-        }
-    )
-
-    if (isSheetOpen) {
-        ModalBottomSheet(
-            sheetState = sheetState,
-            onDismissRequest = { isSheetOpen = false }
-        ) {
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetContent = {
             PlayerBottomSheetContent(
                 playlists = playlists,
                 createNewPlaylist = {
@@ -124,8 +111,55 @@ fun PlayerScreen(
                     playerViewModel.addTrackToPlaylist(playlist)
                 }
             )
-        }
+        },
+        sheetPeekHeight = 0.dp
+    ) {
+        PlayerScreenContent(
+            playerState = playerState,
+            playingTime = playingTime,
+            isFavorite = isFavorite,
+            track = track,
+            navigateBack = { navController.popBackStack() },
+            playbackControl = { playerViewModel.playbackControl() },
+            addOrDeleteFromFavorite = {
+                if (isFavorite) playerViewModel.deleteFromFavorite(track)
+                else playerViewModel.addToFavorite(track)
+            },
+            addToPlaylist = { playlist ->
+                playerViewModel.addTrackToPlaylist(playlist)
+            },
+            openBottomSheet = {
+                bottomSheetScope.launch {
+                    scaffoldState.bottomSheetState.expand()
+                }
+            }
+        )
     }
+
+
+//    if (isSheetOpen) {
+//        ModalBottomSheet(
+//            sheetState = sheetState,
+//            onDismissRequest = { isSheetOpen = false }
+//        ) {
+//            PlayerBottomSheetContent(
+//                playlists = playlists,
+//                createNewPlaylist = {
+//                    val trackArg = GsonTrackConverter.convertTrackToJson(track)
+//                    var encodeTrackArg = Uri.encode(trackArg)
+//                    navController.navigate(
+//                        Screen.NewPlaylistScreen.route.replace(
+//                            "{track}",
+//                            encodeTrackArg
+//                        )
+//                    )
+//                },
+//                addToPlaylist = { playlist ->
+//                    playerViewModel.addTrackToPlaylist(playlist)
+//                }
+//            )
+//        }
+//    }
 
 }
 
@@ -205,7 +239,8 @@ fun PlayerScreenContent(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_player_add),
                     contentDescription = "Add to playlist button",
-                    tint = Color.Unspecified
+                    tint = MaterialTheme.colorScheme.onBackground
+
                 )
             }
 
@@ -224,7 +259,7 @@ fun PlayerScreenContent(
                         PlayerState.STATE_PLAYING -> painterResource(id = R.drawable.ic_player_pause)
                     },
                     contentDescription = "Play-pause button",
-                    tint = Color.Unspecified
+
                 )
             }
 
@@ -299,7 +334,8 @@ fun PlayerBottomSheetContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.background),
         horizontalAlignment = CenterHorizontally
     ) {
 
@@ -309,14 +345,14 @@ fun PlayerBottomSheetContent(
             fontWeight = FontWeight.Medium,
             fontSize = 19.sp,
             modifier = Modifier
-                .padding(vertical = 28.dp, )
+                .padding(vertical = 8.dp)
 
         )
 
         Button(
             onClick = { createNewPlaylist() },
             modifier = Modifier
-                .padding(top = 24.dp),
+                .padding(top = 8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.onBackground,
                 contentColor = MaterialTheme.colorScheme.background
