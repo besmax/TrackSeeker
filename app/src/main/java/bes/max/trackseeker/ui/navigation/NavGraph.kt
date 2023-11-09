@@ -38,7 +38,8 @@ fun NavigationGraph(navController: NavHostController) {
             val track = GsonTrackConverter.fromJsonToTrack(trackArg)
             PlayerScreen(
                 track,
-                navigateBack = { navController.popBackStack() })
+                navController = navController
+            )
         }
         composable(route = Screen.FavoritetracksScreen.route) {
             FavoriteTracksScreen(navController = navController)

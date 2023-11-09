@@ -1,20 +1,23 @@
 package bes.max.trackseeker.ui.player
 
-import androidx.compose.foundation.background
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,23 +33,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.PlayerState
 import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.player.PlayerViewModel
+import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpGray
-import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
@@ -56,14 +63,15 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun PlayerScreen(
     track: Track,
-    navigateBack: () -> Unit,
     playerViewModel: PlayerViewModel = koinViewModel {
         parametersOf(track)
     },
+    navController: NavController
 ) {
     val playerState by playerViewModel.playerState.observeAsState(PlayerState.STATE_DEFAULT)
     val playingTime by playerViewModel.playingTime.observeAsState("00:00")
     val isFavorite by playerViewModel.isFavorite.observeAsState(false)
+    val playlists by playerViewModel.playlists.observeAsState(emptyList())
 
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
@@ -81,13 +89,16 @@ fun PlayerScreen(
         playingTime = playingTime,
         isFavorite = isFavorite,
         track = track,
-        navigateBack = navigateBack,
+        navigateBack = { navController.popBackStack() },
         playbackControl = { playerViewModel.playbackControl() },
         addOrDeleteFromFavorite = {
             if (isFavorite) playerViewModel.deleteFromFavorite(track)
             else playerViewModel.addToFavorite(track)
         },
-        addToPlaylist = {
+        addToPlaylist = { playlist ->
+            playerViewModel.addTrackToPlaylist(playlist)
+        },
+        openBottomSheet = {
             isSheetOpen = true
         }
     )
@@ -95,8 +106,25 @@ fun PlayerScreen(
     if (isSheetOpen) {
         ModalBottomSheet(
             sheetState = sheetState,
-            onDismissRequest = { /*TODO*/ }
-        ) {  }
+            onDismissRequest = { isSheetOpen = false }
+        ) {
+            PlayerBottomSheetContent(
+                playlists = playlists,
+                createNewPlaylist = {
+                    val trackArg = GsonTrackConverter.convertTrackToJson(track)
+                    var encodeTrackArg = Uri.encode(trackArg)
+                    navController.navigate(
+                        Screen.NewPlaylistScreen.route.replace(
+                            "{track}",
+                            encodeTrackArg
+                        )
+                    )
+                },
+                addToPlaylist = { playlist ->
+                    playerViewModel.addTrackToPlaylist(playlist)
+                }
+            )
+        }
     }
 
 }
@@ -110,7 +138,8 @@ fun PlayerScreenContent(
     navigateBack: () -> Unit,
     playbackControl: () -> Unit,
     addOrDeleteFromFavorite: () -> Unit,
-    addToPlaylist: () -> Unit
+    addToPlaylist: (Playlist) -> Unit,
+    openBottomSheet: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -168,7 +197,7 @@ fun PlayerScreenContent(
 
         Row(modifier = Modifier) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { openBottomSheet() },
                 modifier = Modifier
                     .padding(top = 54.dp)
                     .size(51.dp)
@@ -264,25 +293,123 @@ fun TrackInfo(title: String, content: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerBottomSheetContent(
-    playlists: List<Playlist>
+    playlists: List<Playlist>,
+    createNewPlaylist: () -> Unit,
+    addToPlaylist: (Playlist) -> Unit,
 ) {
-    Column {
-        Spacer(
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = CenterHorizontally
+    ) {
+
+        Text(
+            text = stringResource(id = R.string.add_to_playlist),
+            fontFamily = ysDisplayFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 19.sp,
             modifier = Modifier
-                .width(50.dp)
-                .height(4.dp)
-                .background(color = YpLightGray)
-                .padding(top = 8.dp)
-                .align(Alignment.CenterHorizontally)
-                .clip(shape = RoundedCornerShape(4.dp))
+                .padding(vertical = 28.dp, )
+
         )
 
+        Button(
+            onClick = { createNewPlaylist() },
+            modifier = Modifier
+                .padding(top = 24.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background
+            )
+        ) {
+            Text(
+                text = stringResource(id = R.string.new_playlist),
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp
+            )
+        }
+
+        PlaylistsRowList(playlists, addToPlaylist)
 
     }
 }
 
 @Composable
+fun PlaylistsRowList(
+    playlists: List<Playlist>,
+    onItemClick: (Playlist) -> Unit,
+    isReverse: Boolean = false
+) {
+    LazyColumn(
+        reverseLayout = isReverse,
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        items(
+            items = playlists,
+            key = { playlist -> playlist.id }
+        ) { playlist ->
+            PlaylistRowListItem(playlist, onItemClick)
+        }
+    }
+}
+
+@Composable
+fun PlaylistRowListItem(
+    playlist: Playlist,
+    onItemClick: (Playlist) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onItemClick(playlist) }
+    ) {
+        AsyncImage(
+            model = playlist.coverPath,
+            contentDescription = playlist.name,
+            error = painterResource(id = R.drawable.playlist_placeholder_grid),
+            placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
+            modifier = Modifier
+                .width(45.dp)
+                .height(45.dp)
+                .clip(RoundedCornerShape(2.dp)),
+        )
+
+        Column {
+            Text(
+                text = playlist.name,
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Text(
+                text = pluralStringResource(
+                    id = R.plurals.tracks_number,
+                    count = playlist.tracksNumber,
+                ),
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 11.sp,
+                color = YpGray
+            )
+        }
+    }
+}
+
+@Composable
 @Preview
-fun PlayerBottomSheetContentPreview() {
-    PlayerBottomSheetContent(emptyList())
+fun PlaylistRowListItemPreview() {
+    PlaylistRowListItem(
+        Playlist(
+            name = "Name",
+            description = "Descr",
+            coverPath = null,
+            tracks = emptyList(),
+            tracksNumber = 4
+        ),
+        { }
+    )
 }
