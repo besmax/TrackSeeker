@@ -78,21 +78,9 @@ fun PlayerScreen(
     val isFavorite by playerViewModel.isFavorite.observeAsState(false)
     val playlists by playerViewModel.playlists.observeAsState(emptyList())
 
-    val sheetState = rememberStandardBottomSheetState(
-        initialValue = SheetValue.Hidden,
-        skipHiddenState = false
-    )
-
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = sheetState,
-    )
     val bottomSheetScope = rememberCoroutineScope()
 
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-    val peekHeight = when(sheetState.currentValue) {
-        SheetValue.Expanded, SheetValue.PartiallyExpanded -> (screenHeight * 0.6).toInt()
-        SheetValue.Hidden -> 0
-    }
+    val scaffoldState = rememberBottomSheetScaffoldState()
 
     DisposableEffect(key1 = Unit) {
         onDispose {
@@ -122,7 +110,7 @@ fun PlayerScreen(
             )
         },
         sheetSwipeEnabled = true,
-        sheetPeekHeight = peekHeight.dp,
+        sheetPeekHeight = 0.dp,
     ) {
         PlayerScreenContent(
             playerState = playerState,
