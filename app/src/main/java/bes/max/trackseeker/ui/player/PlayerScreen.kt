@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +20,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -38,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -57,6 +61,7 @@ import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.player.PlayerViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
 import bes.max.trackseeker.ui.navigation.Screen
+import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
@@ -111,7 +116,12 @@ fun PlayerScreen(
         },
         sheetSwipeEnabled = true,
         sheetPeekHeight = 0.dp,
+        sheetContainerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.background
     ) {
+
+
+
         PlayerScreenContent(
             playerState = playerState,
             playingTime = playingTime,
@@ -129,6 +139,15 @@ fun PlayerScreen(
                 }
             }
         )
+
+        if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.5f)
+                    .background(color = YpBlack)
+            )
+        }
     }
 }
 
@@ -207,9 +226,8 @@ fun PlayerScreenContent(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_player_add),
                     contentDescription = "Add to playlist button",
-                    tint = MaterialTheme.colorScheme.onBackground
 
-                )
+                    )
             }
 
             IconButton(
@@ -227,8 +245,7 @@ fun PlayerScreenContent(
                         PlayerState.STATE_PLAYING -> painterResource(id = R.drawable.ic_player_pause)
                     },
                     contentDescription = "Play-pause button",
-
-                    )
+                )
             }
 
             IconButton(
@@ -241,7 +258,6 @@ fun PlayerScreenContent(
                     painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
                     else painterResource(id = R.drawable.ic_player_like),
                     contentDescription = "Add to favorite tracks button",
-                    tint = Color.Unspecified
                 )
             }
         }
@@ -403,6 +419,7 @@ fun PlaylistRowListItem(
         }
     }
 }
+
 
 @Composable
 @Preview
