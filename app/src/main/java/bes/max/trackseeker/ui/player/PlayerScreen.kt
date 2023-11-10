@@ -1,6 +1,7 @@
 package bes.max.trackseeker.ui.player
 
 import android.net.Uri
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,23 +25,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -78,13 +78,21 @@ fun PlayerScreen(
     val isFavorite by playerViewModel.isFavorite.observeAsState(false)
     val playlists by playerViewModel.playlists.observeAsState(emptyList())
 
-    val sheetState = rememberModalBottomSheetState()
-    var isSheetOpen by rememberSaveable {
-        mutableStateOf(false)
-    }
+    val sheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        skipHiddenState = false
+    )
 
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = sheetState,
+    )
     val bottomSheetScope = rememberCoroutineScope()
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+    val peekHeight = when(sheetState.currentValue) {
+        SheetValue.Expanded, SheetValue.PartiallyExpanded -> (screenHeight * 0.6).toInt()
+        SheetValue.Hidden -> 0
+    }
 
     DisposableEffect(key1 = Unit) {
         onDispose {
@@ -99,7 +107,7 @@ fun PlayerScreen(
                 playlists = playlists,
                 createNewPlaylist = {
                     val trackArg = GsonTrackConverter.convertTrackToJson(track)
-                    var encodeTrackArg = Uri.encode(trackArg)
+                    val encodeTrackArg = Uri.encode(trackArg)
                     navController.navigate(
                         Screen.NewPlaylistScreen.route.replace(
                             "{track}",
@@ -109,10 +117,12 @@ fun PlayerScreen(
                 },
                 addToPlaylist = { playlist ->
                     playerViewModel.addTrackToPlaylist(playlist)
-                }
+                    playerViewModel.getPlaylists()
+                },
             )
         },
-        sheetPeekHeight = 0.dp
+        sheetSwipeEnabled = true,
+        sheetPeekHeight = peekHeight.dp,
     ) {
         PlayerScreenContent(
             playerState = playerState,
@@ -125,9 +135,6 @@ fun PlayerScreen(
                 if (isFavorite) playerViewModel.deleteFromFavorite(track)
                 else playerViewModel.addToFavorite(track)
             },
-            addToPlaylist = { playlist ->
-                playerViewModel.addTrackToPlaylist(playlist)
-            },
             openBottomSheet = {
                 bottomSheetScope.launch {
                     scaffoldState.bottomSheetState.expand()
@@ -135,32 +142,6 @@ fun PlayerScreen(
             }
         )
     }
-
-
-//    if (isSheetOpen) {
-//        ModalBottomSheet(
-//            sheetState = sheetState,
-//            onDismissRequest = { isSheetOpen = false }
-//        ) {
-//            PlayerBottomSheetContent(
-//                playlists = playlists,
-//                createNewPlaylist = {
-//                    val trackArg = GsonTrackConverter.convertTrackToJson(track)
-//                    var encodeTrackArg = Uri.encode(trackArg)
-//                    navController.navigate(
-//                        Screen.NewPlaylistScreen.route.replace(
-//                            "{track}",
-//                            encodeTrackArg
-//                        )
-//                    )
-//                },
-//                addToPlaylist = { playlist ->
-//                    playerViewModel.addTrackToPlaylist(playlist)
-//                }
-//            )
-//        }
-//    }
-
 }
 
 @Composable
@@ -172,7 +153,6 @@ fun PlayerScreenContent(
     navigateBack: () -> Unit,
     playbackControl: () -> Unit,
     addOrDeleteFromFavorite: () -> Unit,
-    addToPlaylist: (Playlist) -> Unit,
     openBottomSheet: () -> Unit,
 ) {
     Column(
@@ -260,7 +240,7 @@ fun PlayerScreenContent(
                     },
                     contentDescription = "Play-pause button",
 
-                )
+                    )
             }
 
             IconButton(
@@ -424,7 +404,8 @@ fun PlaylistRowListItem(
             Text(
                 text = pluralStringResource(
                     id = R.plurals.tracks_number,
-                    count = playlist.tracksNumber,
+                    playlist.tracks?.size ?: 0,
+                    playlist.tracks?.size ?: 0
                 ),
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
