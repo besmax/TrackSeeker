@@ -148,25 +148,20 @@ fun PlayerScreen(
         //showing snackbar if track was added to playlist or not
         if (trackIsAdded.first != null) {
             val context = LocalContext.current
+            val stringResId =
+                if (trackIsAdded.first == true) R.string.player_screen_toast_added
+                else R.string.player_screen_toast_not_added
+
             LaunchedEffect(snackbarHostState) {
+                if (trackIsAdded.first == true) scaffoldState.bottomSheetState.hide()
                 snackbarHostState.showSnackbar(
-                    message = if (trackIsAdded.first == true) {
-                        scaffoldState.bottomSheetState.hide()
-                        context.resources.getString(
-                            R.string.player_screen_toast_added,
-                            trackIsAdded.second
-                        )
-                    } else {
-                        context.resources.getString(
-                            R.string.player_screen_toast_not_added,
-                            trackIsAdded.second
-                        )
-                    }
+                    message = context.resources.getString(stringResId, trackIsAdded.second)
                 )
                 playerViewModel.clearIsPlaylistAdded()
             }
         }
 
+        //overlay when bottom sheet is open
         if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
             Box(
                 modifier = Modifier
@@ -281,7 +276,7 @@ fun PlayerScreenContent(
                     .padding(top = 54.dp)
                     .size(51.dp),
 
-            ) {
+                ) {
                 Icon(
                     painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
                     else painterResource(id = R.drawable.ic_player_like),
