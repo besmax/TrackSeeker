@@ -12,6 +12,7 @@ import bes.max.trackseeker.ui.mediateka.MediatekaScreen
 import bes.max.trackseeker.ui.SettingsScreen
 import bes.max.trackseeker.ui.mediateka.favorite.FavoriteTracksScreen
 import bes.max.trackseeker.ui.mediateka.newplaylist.NewPlaylistScreen
+import bes.max.trackseeker.ui.mediateka.playlistdetails.PlaylistDetailsScreen
 import bes.max.trackseeker.ui.player.PlayerScreen
 import bes.max.trackseeker.ui.search.SearchScreen
 
@@ -62,7 +63,21 @@ fun NavigationGraph(navController: NavHostController) {
                 navigateBack = { navController.popBackStack() }
             )
         }
-        composable(route = Screen.SettingsScreen.route) {
+        composable(
+            route = Screen.SettingsScreen.route,
+            arguments = listOf(
+                navArgument(name = "playlistId") {
+                    type = NavType.LongType
+                    nullable = false
+                }
+            )
+            ) {
+            PlaylistDetailsScreen(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.PlaylistDetailsScreen.route) {
             SettingsScreen()
         }
     }

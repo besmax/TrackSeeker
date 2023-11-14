@@ -60,14 +60,23 @@ fun PlaylistsScreen(
 
     PlaylistsScreenContent(
         uiState = uiState,
-        addPlaylist = { navController.navigate(Screen.NewPlaylistScreen.route) }
+        addPlaylist = { navController.navigate(Screen.NewPlaylistScreen.route) },
+        navigateToPlaylistDetails = { playlistId ->
+            navController.navigate(
+                Screen.PlaylistDetailsScreen.route.replace(
+                    "{playlistId}",
+                    playlistId.toString()
+                )
+            )
+        }
     )
 }
 
 @Composable
 fun PlaylistsScreenContent(
     uiState: PlaylistScreenState,
-    addPlaylist: () -> Unit
+    addPlaylist: () -> Unit,
+    navigateToPlaylistDetails: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -96,7 +105,7 @@ fun PlaylistsScreenContent(
 
             is PlaylistScreenState.Content -> ShowPlaylists(
                 playlists = uiState.playlists,
-                onItemClick = { },
+                onItemClick = navigateToPlaylistDetails,
             )
 
             is PlaylistScreenState.Loading -> Loading()
@@ -108,7 +117,7 @@ fun PlaylistsScreenContent(
 @Composable
 fun ShowPlaylists(
     playlists: List<Playlist>,
-    onItemClick: (Playlist) -> Unit,
+    onItemClick: (Long) -> Unit,
     isReverse: Boolean = false
 ) {
     LazyVerticalGrid(
@@ -129,13 +138,13 @@ fun ShowPlaylists(
 @Composable
 fun PlaylistGridListItem(
     playlist: Playlist,
-    onItemClick: (Playlist) -> Unit
+    onItemClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
-            .clickable { onItemClick(playlist) }
+            .clickable { onItemClick(playlist.id) }
     ) {
 
         AsyncImage(
