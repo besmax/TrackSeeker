@@ -70,5 +70,6 @@
     <string name="no">Нет</string>
     <string name="edit">Редактировать</string>
     <string name="save">Сохранить</string>
+    <string name="playlist">Плейлист</string>
 
 </resources>
