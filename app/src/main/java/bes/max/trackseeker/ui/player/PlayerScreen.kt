@@ -1,7 +1,6 @@
 package bes.max.trackseeker.ui.player
 
 import android.net.Uri
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,31 +19,32 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -82,10 +82,15 @@ fun PlayerScreen(
     val playingTime by playerViewModel.playingTime.observeAsState("00:00")
     val isFavorite by playerViewModel.isFavorite.observeAsState(false)
     val playlists by playerViewModel.playlists.observeAsState(emptyList())
+    val trackIsAdded by playerViewModel.isPlaylistAdded.observeAsState(Pair(null, ""))
 
     val bottomSheetScope = rememberCoroutineScope()
 
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false)
+    )
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     DisposableEffect(key1 = Unit) {
         onDispose {
@@ -95,12 +100,14 @@ fun PlayerScreen(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         sheetContent = {
             PlayerBottomSheetContent(
                 playlists = playlists,
                 createNewPlaylist = {
                     val trackArg = GsonTrackConverter.convertTrackToJson(track)
                     val encodeTrackArg = Uri.encode(trackArg)
+                    bottomSheetScope.launch { scaffoldState.bottomSheetState.partialExpand() }
                     navController.navigate(
                         Screen.NewPlaylistScreen.route.replace(
                             "{track}",
@@ -120,8 +127,6 @@ fun PlayerScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) {
 
-
-
         PlayerScreenContent(
             playerState = playerState,
             playingTime = playingTime,
@@ -139,6 +144,28 @@ fun PlayerScreen(
                 }
             }
         )
+
+        //showing snackbar if track was added to playlist or not
+        if (trackIsAdded.first != null) {
+            val context = LocalContext.current
+            LaunchedEffect(snackbarHostState) {
+                snackbarHostState.showSnackbar(
+                    message = if (trackIsAdded.first == true) {
+                        scaffoldState.bottomSheetState.hide()
+                        context.resources.getString(
+                            R.string.player_screen_toast_added,
+                            trackIsAdded.second
+                        )
+                    } else {
+                        context.resources.getString(
+                            R.string.player_screen_toast_not_added,
+                            trackIsAdded.second
+                        )
+                    }
+                )
+                playerViewModel.clearIsPlaylistAdded()
+            }
+        }
 
         if (scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
             Box(
@@ -252,7 +279,8 @@ fun PlayerScreenContent(
                 onClick = { addOrDeleteFromFavorite() },
                 modifier = Modifier
                     .padding(top = 54.dp)
-                    .size(51.dp)
+                    .size(51.dp),
+
             ) {
                 Icon(
                     painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
@@ -419,7 +447,6 @@ fun PlaylistRowListItem(
         }
     }
 }
-
 
 @Composable
 @Preview

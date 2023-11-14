@@ -134,6 +134,7 @@ class PlayerViewModel(
         viewModelScope.launch {
             playlistInteractor.addTrackToPlaylist(track, playlist).collect() {
                 _isPlaylistAdded.postValue(Pair(it, playlist.name))
+                getPlaylists()
             }
         }
     }

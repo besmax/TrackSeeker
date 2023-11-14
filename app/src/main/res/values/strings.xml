@@ -30,6 +30,9 @@
     <string name="country">Страна</string>
     <string name="track_json">TRACK_JSON</string>
 
+    <string name="player_screen_toast_added">Трек добавлен в плэйлист %1$s</string>
+    <string name="player_screen_toast_not_added">Трек уже добавлен в плэйлист %1$s</string>
+
     <string name="favorite_tracks_placeholder_text">Ваша медиатека пуста</string>
     <string name="playlist_placeholder_text">Вы не создали \nни одного плейлиста</string>
     <string name="playlist_placeholder_button">Новый плейлист</string>
