@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -188,8 +189,8 @@ fun SearchError(refreshSearch: () -> Unit) {
             modifier = Modifier
                 .padding(top = 24.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.button_background),
-                contentColor = colorResource(id = R.color.button_text)
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background
             )
         ) {
             Text(
