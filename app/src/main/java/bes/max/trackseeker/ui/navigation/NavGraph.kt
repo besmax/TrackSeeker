@@ -64,7 +64,7 @@ fun NavigationGraph(navController: NavHostController) {
             )
         }
         composable(
-            route = Screen.SettingsScreen.route,
+            route = Screen.PlaylistDetailsScreen.route,
             arguments = listOf(
                 navArgument(name = "playlistId") {
                     type = NavType.LongType
@@ -77,7 +77,7 @@ fun NavigationGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = Screen.PlaylistDetailsScreen.route) {
+        composable(route = Screen.SettingsScreen.route) {
             SettingsScreen()
         }
     }
