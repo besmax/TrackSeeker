@@ -3,6 +3,7 @@ package bes.max.trackseeker.ui.mediateka.playlists
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -155,7 +156,8 @@ fun PlaylistGridListItem(
             modifier = Modifier
                 .width(160.dp)
                 .height(160.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                .clip(RoundedCornerShape(8.dp))
+                .aspectRatio(1f),
         )
 
         Text(
