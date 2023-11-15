@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
@@ -39,11 +42,16 @@ fun PlaylistDetailsScreen(
         PlaylistDetailsScreenState.Default
     )
 
+    if (screenState is PlaylistDetailsScreenState.Content) {
+        PlaylistDetailsScreenContent(screenState as PlaylistDetailsScreenState.Content)
+    }
+
+
 }
 
 @Composable
 fun PlaylistDetailsScreenContent(
-    playlistDetails: PlaylistDetails
+    screenState: PlaylistDetailsScreenState.Content
 ) {
 
     Column(
@@ -51,7 +59,7 @@ fun PlaylistDetailsScreenContent(
             .fillMaxSize()
     ) {
         AsyncImage(
-            model = playlistDetails.cover?.toUri(),
+            model = screenState.playlistDetails.cover?.toUri(),
             contentDescription = "playlist cover",
             error = painterResource(id = R.drawable.playlist_placeholder_grid),
             placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
@@ -60,29 +68,35 @@ fun PlaylistDetailsScreenContent(
         )
 
         Text(
-            text = playlistDetails.title,
+            text = screenState.playlistDetails.title,
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 24.sp,
-            color = YpGray
+            color = YpGray,
+            modifier = Modifier
+                .padding(start = 16.dp, top = 24.dp)
         )
 
         Text(
-            text = playlistDetails.description,
+            text = screenState.playlistDetails.description,
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
-            color = YpGray
+            color = YpGray,
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp)
         ) {
             Text(
                 text = pluralStringResource(
                     id = R.plurals.minutes_number,
-                    count = playlistDetails.durationSum.toInt(),
-                    playlistDetails.durationSum.toInt()
+                    count = screenState.playlistDetails.duration,
+                    screenState.playlistDetails.duration
                 ),
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
@@ -92,14 +106,16 @@ fun PlaylistDetailsScreenContent(
             Icon(
                 painterResource(id = R.drawable.ic_circle_between_text),
                 contentDescription = "Text separator",
-                tint = YpBlack
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 2.dp, end = 2.dp)
             )
 
             Text(
                 text = pluralStringResource(
                     id = R.plurals.tracks_number,
-                    count = playlistDetails.tracksNumber,
-                    playlistDetails.tracksNumber
+                    count = screenState.playlistDetails.tracksNumber,
+                    screenState.playlistDetails.tracksNumber
                 ),
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,

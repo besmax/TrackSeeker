@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -248,7 +249,7 @@ fun PlayerScreenContent(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_player_add),
                     contentDescription = "Add to playlist button",
-
+                    tint = Color.Unspecified, // TODO check
                     )
             }
 
@@ -281,6 +282,7 @@ fun PlayerScreenContent(
                     painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
                     else painterResource(id = R.drawable.ic_player_like),
                     contentDescription = "Add to favorite tracks button",
+                    tint = Color.Unspecified, // TODO check
                 )
             }
         }
