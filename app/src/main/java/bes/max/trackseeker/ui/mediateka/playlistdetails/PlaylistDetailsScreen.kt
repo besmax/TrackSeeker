@@ -1,20 +1,37 @@
 package bes.max.trackseeker.ui.mediateka.playlistdetails
 
+import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,15 +40,22 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
-import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetails
+import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsScreenState
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsViewModel
+import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.TrackList
+import bes.max.trackseeker.ui.navigation.Screen
+import bes.max.trackseeker.ui.player.PlayerBottomSheetContent
+import bes.max.trackseeker.ui.player.PlayerScreenContent
 import bes.max.trackseeker.ui.theme.YpBlack
-import bes.max.trackseeker.ui.theme.YpGray
+import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistDetailsScreen(
     navController: NavController,
@@ -42,8 +66,45 @@ fun PlaylistDetailsScreen(
         PlaylistDetailsScreenState.Default
     )
 
-    if (screenState is PlaylistDetailsScreenState.Content) {
-        PlaylistDetailsScreenContent(screenState as PlaylistDetailsScreenState.Content)
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    val bottomSheetMenuState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheetMenu by remember { mutableStateOf(false) }
+
+
+
+
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetContent = {
+            TracksBottomSheetContent(
+                tracks = (screenState as? PlaylistDetailsScreenState.Content)?.playlistDetails?.tracks
+                    ?: emptyList(),
+                onItemClick = { track ->
+                    val trackArg = GsonTrackConverter.convertTrackToJson(track)
+                    val encodeTrackArg = Uri.encode(trackArg)
+                    navController.navigate(
+                        Screen.PlayerScreen.route.replace(
+                            "{track}",
+                            encodeTrackArg
+                        )
+                    )
+                }
+            )
+        },
+        sheetSwipeEnabled = true,
+        sheetPeekHeight = 0.dp,
+        sheetContainerColor = MaterialTheme.colorScheme.background,
+        containerColor = MaterialTheme.colorScheme.background
+    ) {
+
+        if (screenState is PlaylistDetailsScreenState.Content) {
+            PlaylistDetailsScreenContent(
+                screenState as PlaylistDetailsScreenState.Content,
+            )
+        }
+
     }
 
 
@@ -51,12 +112,13 @@ fun PlaylistDetailsScreen(
 
 @Composable
 fun PlaylistDetailsScreenContent(
-    screenState: PlaylistDetailsScreenState.Content
+    screenState: PlaylistDetailsScreenState.Content,
 ) {
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = YpLightGray)
     ) {
         AsyncImage(
             model = screenState.playlistDetails.cover?.toUri(),
@@ -70,9 +132,9 @@ fun PlaylistDetailsScreenContent(
         Text(
             text = screenState.playlistDetails.title,
             fontFamily = ysDisplayFamily,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
-            color = YpGray,
+            color = YpBlack,
             modifier = Modifier
                 .padding(start = 16.dp, top = 24.dp)
         )
@@ -82,7 +144,7 @@ fun PlaylistDetailsScreenContent(
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
-            color = YpGray,
+            color = YpBlack,
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         )
@@ -101,14 +163,14 @@ fun PlaylistDetailsScreenContent(
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 18.sp,
-                color = YpGray
+                color = YpBlack
             )
             Icon(
                 painterResource(id = R.drawable.ic_circle_between_text),
                 contentDescription = "Text separator",
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = YpBlack,
                 modifier = Modifier
-                    .padding(top = 10.dp, start = 2.dp, end = 2.dp)
+                    .padding(top = 10.dp, start = 3.dp, end = 3.dp)
             )
 
             Text(
@@ -120,13 +182,15 @@ fun PlaylistDetailsScreenContent(
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 18.sp,
-                color = YpGray
+                color = YpBlack
             )
 
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp)
         ) {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
@@ -145,5 +209,19 @@ fun PlaylistDetailsScreenContent(
             }
         }
     }
+
+}
+
+@Composable
+fun TracksBottomSheetContent(
+    tracks: List<Track>,
+    onItemClick: (Track) -> Unit
+) {
+
+    TrackList(
+        tracks = tracks,
+        onItemClick = { track -> onItemClick(track) },
+        isReverse = false
+    )
 
 }

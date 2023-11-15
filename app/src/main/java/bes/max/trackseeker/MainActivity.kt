@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                     Screen.SearchScreen.route -> buttonsVisible.value = true
                     Screen.PlayerScreen.route -> buttonsVisible.value = false
                     Screen.NewPlaylistScreen.route -> buttonsVisible.value = false
+                    Screen.PlaylistDetailsScreen.route -> buttonsVisible.value = false
                 }
 
                 Scaffold(
