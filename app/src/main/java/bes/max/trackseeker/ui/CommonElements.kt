@@ -114,11 +114,16 @@ fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier
 }
 
 @Composable
-fun TrackList(tracks: List<Track>, onItemClick: (Track) -> Unit, isReverse: Boolean) {
+fun TrackList(
+    tracks: List<Track>,
+    onItemClick: (Track) -> Unit,
+    isReverse: Boolean,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         reverseLayout = isReverse,
-        modifier = Modifier.padding(top = 16.dp)
-        ) {
+        modifier = modifier.padding(top = 16.dp)
+    ) {
         items(
             items = tracks,
             key = { track -> track.trackId }
