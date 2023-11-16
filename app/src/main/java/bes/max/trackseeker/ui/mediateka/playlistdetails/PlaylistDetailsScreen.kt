@@ -97,6 +97,9 @@ fun PlaylistDetailsScreen(
                 PlaylistDetailsScreenContent(
                     screenState = screenState as PlaylistDetailsScreenState.Content,
                     navigateBack = { navController.navigateUp() },
+                    sharePlaylist = {
+                        playlistDetailsViewModel.sharePlaylist((screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist)
+                    },
                     modifier = Modifier.clickable {
                         scope.launch {
                             scaffoldState.bottomSheetState.partialExpand()
@@ -115,6 +118,7 @@ fun PlaylistDetailsScreen(
 fun PlaylistDetailsScreenContent(
     screenState: PlaylistDetailsScreenState.Content,
     navigateBack: () -> Unit,
+    sharePlaylist: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -211,7 +215,7 @@ fun PlaylistDetailsScreenContent(
                 .fillMaxWidth()
                 .padding(start = 8.dp)
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { sharePlaylist() }) {
                 Icon(
                     painterResource(id = R.drawable.ic_share),
                     contentDescription = "Text separator",
