@@ -15,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -31,16 +32,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
+import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
+import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetails
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsScreenState
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.PlaylistRowListItem
 import bes.max.trackseeker.ui.TrackList
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlack
@@ -100,11 +105,31 @@ fun PlaylistDetailsScreen(
                     sharePlaylist = {
                         playlistDetailsViewModel.sharePlaylist((screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist)
                     },
+                    openMenu = { scope.launch {
+                        bottomSheetMenuState.expand()
+                    } },
                     modifier = Modifier.clickable {
-                        scope.launch {
-                            scaffoldState.bottomSheetState.partialExpand()
-                        }
+                        showBottomSheetMenu = true
                     }
+                )
+            }
+
+            if (showBottomSheetMenu) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        showBottomSheetMenu = false
+                    },
+                    sheetState = bottomSheetMenuState,
+                    content = {
+                        MenuBottomSheetContent(
+                            playlist = (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist,
+                            sharePlaylist = { playlistDetailsViewModel.sharePlaylist(
+                                (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
+                            ) },
+                            editPlaylist = { /*TODO*/ },
+                            deletePlaylist = {  })
+                    }
+
                 )
             }
 
@@ -119,6 +144,7 @@ fun PlaylistDetailsScreenContent(
     screenState: PlaylistDetailsScreenState.Content,
     navigateBack: () -> Unit,
     sharePlaylist: () -> Unit,
+    openMenu: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -223,7 +249,7 @@ fun PlaylistDetailsScreenContent(
                 )
             }
 
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { openMenu() }) {
                 Icon(
                     painterResource(id = R.drawable.ic_more_vert),
                     contentDescription = "Text separator",
@@ -231,6 +257,30 @@ fun PlaylistDetailsScreenContent(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun MenuBottomSheetContent(
+    playlist: Playlist,
+    sharePlaylist: () -> Unit,
+    editPlaylist: () -> Unit,
+    deletePlaylist: () -> Unit
+) {
+    Column {
+        PlaylistRowListItem(playlist = playlist, onItemClick = { })
+
+        Text(
+            text = stringResource(id = R.string.share),
+            modifier = Modifier.clickable { sharePlaylist() })
+
+        Text(
+            text = stringResource(id = R.string.edit_playlist),
+            modifier = Modifier.clickable { editPlaylist() })
+
+        Text(
+            text = stringResource(id = R.string.delete_playlist),
+            modifier = Modifier.clickable { deletePlaylist() })
     }
 
 }

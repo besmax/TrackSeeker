@@ -15,17 +15,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bes.max.trackseeker.R
+import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpGray
@@ -129,6 +132,52 @@ fun TrackList(
             key = { track -> track.trackId }
         ) { track ->
             TrackListItem(track, onItemClick)
+        }
+    }
+}
+
+@Composable
+fun PlaylistRowListItem(
+    playlist: Playlist,
+    onItemClick: (Playlist) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onItemClick(playlist) }
+    ) {
+        AsyncImage(
+            model = playlist.coverPath,
+            contentDescription = playlist.name,
+            error = painterResource(id = R.drawable.playlist_placeholder_grid),
+            placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
+            modifier = Modifier
+                .width(45.dp)
+                .height(45.dp)
+                .clip(RoundedCornerShape(2.dp)),
+        )
+
+        Column {
+            Text(
+                text = playlist.name,
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            Text(
+                text = pluralStringResource(
+                    id = R.plurals.tracks_number,
+                    playlist.tracks?.size ?: 0,
+                    playlist.tracks?.size ?: 0
+                ),
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 11.sp,
+                color = YpGray
+            )
         }
     }
 }

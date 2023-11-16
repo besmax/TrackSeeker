@@ -61,6 +61,7 @@ import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.player.PlayerViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.PlaylistRowListItem
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpGray
@@ -395,52 +396,6 @@ fun PlaylistsRowList(
             key = { playlist -> playlist.id }
         ) { playlist ->
             PlaylistRowListItem(playlist, onItemClick)
-        }
-    }
-}
-
-@Composable
-fun PlaylistRowListItem(
-    playlist: Playlist,
-    onItemClick: (Playlist) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onItemClick(playlist) }
-    ) {
-        AsyncImage(
-            model = playlist.coverPath,
-            contentDescription = playlist.name,
-            error = painterResource(id = R.drawable.playlist_placeholder_grid),
-            placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
-            modifier = Modifier
-                .width(45.dp)
-                .height(45.dp)
-                .clip(RoundedCornerShape(2.dp)),
-        )
-
-        Column {
-            Text(
-                text = playlist.name,
-                fontFamily = ysDisplayFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-
-            Text(
-                text = pluralStringResource(
-                    id = R.plurals.tracks_number,
-                    playlist.tracks?.size ?: 0,
-                    playlist.tracks?.size ?: 0
-                ),
-                fontFamily = ysDisplayFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 11.sp,
-                color = YpGray
-            )
         }
     }
 }
