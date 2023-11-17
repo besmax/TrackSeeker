@@ -3,6 +3,7 @@ package bes.max.trackseeker.ui.mediateka.playlistdetails
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -49,11 +52,13 @@ import bes.max.trackseeker.ui.PlaylistRowListItem
 import bes.max.trackseeker.ui.TrackList
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlack
+import bes.max.trackseeker.ui.theme.YpBlue
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.time.format.TextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +76,10 @@ fun PlaylistDetailsScreen(
     val bottomSheetMenuState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheetMenu by remember { mutableStateOf(false) }
+
+    var showDeletePlaylistDialog by remember {
+        mutableStateOf(false)
+    }
 
     Box(modifier = Modifier.background(color = YpLightGray)) {
         BottomSheetScaffold(
@@ -105,11 +114,16 @@ fun PlaylistDetailsScreen(
                     sharePlaylist = {
                         playlistDetailsViewModel.sharePlaylist((screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist)
                     },
-                    openMenu = { scope.launch {
-                        bottomSheetMenuState.expand()
-                    } },
+                    openMenu = {
+                        scope.launch {
+                            showBottomSheetMenu = true
+                        }
+                    },
                     modifier = Modifier.clickable {
-                        showBottomSheetMenu = true
+                        showBottomSheetMenu = false
+                        scope.launch {
+                            scaffoldState.bottomSheetState.partialExpand()
+                        }
                     }
                 )
             }
@@ -123,13 +137,25 @@ fun PlaylistDetailsScreen(
                     content = {
                         MenuBottomSheetContent(
                             playlist = (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist,
-                            sharePlaylist = { playlistDetailsViewModel.sharePlaylist(
-                                (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
-                            ) },
+                            sharePlaylist = {
+                                playlistDetailsViewModel.sharePlaylist(
+                                    (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
+                                )
+                            },
                             editPlaylist = { /*TODO*/ },
-                            deletePlaylist = {  })
+                            deletePlaylist = { showDeletePlaylistDialog = true })
                     }
+                )
+            }
 
+            if (showDeletePlaylistDialog) {
+                DeletePlaylistDialog(
+                    onDismissRequest = { showDeletePlaylistDialog = false },
+                    onConfirm = {
+                        playlistDetailsViewModel.deletePlaylist(
+                            (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
+                        )
+                    }
                 )
             }
 
@@ -272,15 +298,36 @@ fun MenuBottomSheetContent(
 
         Text(
             text = stringResource(id = R.string.share),
-            modifier = Modifier.clickable { sharePlaylist() })
+            fontFamily = ysDisplayFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { sharePlaylist() }
+                .padding(horizontal = 16.dp, vertical = 20.dp))
 
         Text(
             text = stringResource(id = R.string.edit_playlist),
-            modifier = Modifier.clickable { editPlaylist() })
+            fontFamily = ysDisplayFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { editPlaylist() }
+                .padding(horizontal = 16.dp, vertical = 20.dp)
+        )
+
 
         Text(
             text = stringResource(id = R.string.delete_playlist),
-            modifier = Modifier.clickable { deletePlaylist() })
+            fontFamily = ysDisplayFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { deletePlaylist() }
+                .padding(start = 20.dp, top = 16.dp, bottom = 56.dp)
+        )
     }
 
 }
@@ -296,5 +343,74 @@ fun TracksBottomSheetContent(
         onItemClick = { track -> onItemClick(track) },
         isReverse = false,
     )
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeletePlaylistDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+
+    AlertDialog(
+        onDismissRequest = { onDismissRequest() }
+    ) {
+        Column(
+            modifier = Modifier.background(color = Color.White)
+        ) {
+            Text(
+                text = stringResource(id = R.string.delete_playlist),
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = YpBlack,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, top = 20.dp)
+            )
+
+            Text(
+                text = stringResource(id = R.string.want_delete_playlist),
+                fontFamily = ysDisplayFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = YpBlack,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 16.dp, bottom = 16.dp)
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.yes).uppercase(),
+                    fontFamily = ysDisplayFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = YpBlue,
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .clickable { onConfirm() }
+                )
+
+                Text(
+                    text = stringResource(id = R.string.no).uppercase(),
+                    fontFamily = ysDisplayFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = YpBlue,
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .clickable { onDismissRequest() }
+                )
+            }
+        }
+
+    }
 
 }
