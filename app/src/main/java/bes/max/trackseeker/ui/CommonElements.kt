@@ -158,6 +158,8 @@ fun PlaylistRowListItem(
                 .clip(RoundedCornerShape(2.dp)),
         )
 
+        Spacer(modifier = Modifier.width(8.dp))
+
         Column {
             Text(
                 text = playlist.name,

@@ -155,6 +155,7 @@ fun PlaylistDetailsScreen(
                         playlistDetailsViewModel.deletePlaylist(
                             (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
                         )
+                        navController.navigateUp()
                     }
                 )
             }
