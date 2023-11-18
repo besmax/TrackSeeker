@@ -1,4 +1,4 @@
-package bes.max.trackseeker.presentation.mediateka.newplaylist
+package bes.max.trackseeker.ui.mediateka.newplaylist
 
 sealed interface NewPlaylistScreenState {
 

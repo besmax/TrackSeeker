@@ -7,7 +7,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
-import bes.max.trackseeker.presentation.mediateka.editplaylist.EditPlaylistScreenState
 import bes.max.trackseeker.presentation.mediateka.editplaylist.EditPlaylistViewModel
 import bes.max.trackseeker.ui.mediateka.newplaylist.NewOrEditPlaylistScreenContent
 import org.koin.androidx.compose.koinViewModel

@@ -1,6 +1,7 @@
-package bes.max.trackseeker.presentation.mediateka.playlistdetails
+package bes.max.trackseeker.ui.mediateka.playlistdetails
 
 import bes.max.trackseeker.domain.models.Playlist
+import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetails
 
 sealed interface PlaylistDetailsScreenState {
 

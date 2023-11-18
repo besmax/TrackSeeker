@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import bes.max.trackseeker.domain.mediateka.playlist.PlaylistInteractor
 import bes.max.trackseeker.domain.mediateka.playlistdetails.SharePlaylistUseCase
 import bes.max.trackseeker.domain.models.Playlist
+import bes.max.trackseeker.ui.mediateka.playlistdetails.PlaylistDetailsScreenState
 import kotlinx.coroutines.launch
 
 class PlaylistDetailsViewModel(

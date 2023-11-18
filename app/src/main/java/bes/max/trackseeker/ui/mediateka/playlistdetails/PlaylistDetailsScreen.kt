@@ -44,7 +44,6 @@ import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
-import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsScreenState
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
 import bes.max.trackseeker.ui.PlaylistRowListItem

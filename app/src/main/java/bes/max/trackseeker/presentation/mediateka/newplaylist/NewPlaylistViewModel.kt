@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import bes.max.trackseeker.domain.mediateka.playlist.PlaylistInteractor
 import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
+import bes.max.trackseeker.ui.mediateka.newplaylist.NewPlaylistScreenState
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

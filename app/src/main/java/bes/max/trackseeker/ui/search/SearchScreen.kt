@@ -107,7 +107,6 @@ fun SearchScreenContent(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserInput(onValueChanged: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
@@ -231,7 +230,7 @@ fun SearchHistory(tracks: List<Track>, clearHistory: () -> Unit, onItemClick: (T
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 42.dp, end = 16.dp, bottom = 20.dp),
+                .padding(top = 42.dp, bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

@@ -1,4 +1,4 @@
-package bes.max.trackseeker.presentation.mediateka.editplaylist
+package bes.max.trackseeker.ui.mediateka.editplaylist
 
 import bes.max.trackseeker.domain.models.Playlist
 
