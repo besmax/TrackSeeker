@@ -1,6 +1,8 @@
 package bes.max.trackseeker.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,13 +57,26 @@ fun Title(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier = Modifier) {
+fun TrackListItem(
+    track: Track,
+    onItemClick: (Track) -> Unit,
+    modifier: Modifier = Modifier,
+    onLongItemClick: ((Long) -> Unit)? = null
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 20.dp, top = 8.dp, bottom = 8.dp)
-            .clickable { onItemClick.invoke(track) },
+            .combinedClickable(
+                onClick = { onItemClick(track) },
+                onLongClick = {
+                    if (onLongItemClick != null) {
+                        onLongItemClick(track.trackId)
+                    }
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.height(20.dp))
@@ -75,20 +91,28 @@ fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier
                 .clip(RoundedCornerShape(2.dp)),
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Column {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = track.trackName,
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 16.sp
-            )
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+
+
+                )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = track.artistName,
                     fontFamily = ysDisplayFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 11.sp,
-                    color = YpGray
+                    color = YpGray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.ic_circle_between_text),
@@ -107,7 +131,6 @@ fun TrackListItem(track: Track, onItemClick: (Track) -> Unit, modifier: Modifier
             }
 
         }
-        Spacer(modifier = Modifier.weight(1f))
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow),
             contentDescription = "right arrow",
@@ -121,7 +144,8 @@ fun TrackList(
     tracks: List<Track>,
     onItemClick: (Track) -> Unit,
     isReverse: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLongItemClick: ((Long) -> Unit)? = null
 ) {
     LazyColumn(
         reverseLayout = isReverse,
@@ -131,7 +155,11 @@ fun TrackList(
             items = tracks,
             key = { track -> track.trackId }
         ) { track ->
-            TrackListItem(track, onItemClick)
+            TrackListItem(
+                track = track,
+                onItemClick = onItemClick,
+                onLongItemClick = onLongItemClick
+            )
         }
     }
 }

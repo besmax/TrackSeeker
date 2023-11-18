@@ -26,8 +26,6 @@ import bes.max.trackseeker.data.settings.SettingsDaoImpl
 import bes.max.trackseeker.domain.mediateka.playlist.ImageDao
 import bes.max.trackseeker.domain.settings.ExternalNavigator
 import com.google.gson.Gson
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf

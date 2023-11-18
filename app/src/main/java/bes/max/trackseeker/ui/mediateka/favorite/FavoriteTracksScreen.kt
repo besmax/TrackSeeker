@@ -48,7 +48,7 @@ fun FavoriteTracksScreen(
         uiState = uiState,
         onItemClick = { track ->
             val trackArg = GsonTrackConverter.convertTrackToJson(track)
-            var encodeTrackArg = Uri.encode(trackArg) //Does not work without this line
+            var encodeTrackArg = Uri.encode(trackArg) //Does not work without encoding
             navController.navigate(Screen.PlayerScreen.route.replace("{track}", encodeTrackArg))
         }
     )

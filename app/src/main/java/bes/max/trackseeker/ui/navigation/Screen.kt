@@ -14,4 +14,6 @@ sealed class Screen(val route: String, @StringRes val titleResId: Int, @Drawable
 
     object NewPlaylistScreen : Screen("newPlaylistScreen?{track}", R.string.new_playlist)
     object PlaylistDetailsScreen : Screen("playlistDetailsScreen/{playlistId}", R.string.playlist)
+
+    object EditPlaylistScreen : Screen("editPlaylistScreen/{playlistId}", R.string.edit)
 }

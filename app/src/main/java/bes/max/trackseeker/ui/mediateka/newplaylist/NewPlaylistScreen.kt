@@ -5,7 +5,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -79,7 +78,7 @@ fun NewPlaylistScreen(
         }
     }
 
-    NewPlaylistScreenContent(
+    NewOrEditPlaylistScreenContent(
         navigateBack = { navigateBack() },
         fillName = { name = it },
         fillDescription = { description = it },
@@ -87,17 +86,24 @@ fun NewPlaylistScreen(
         doOnButtonClick = {
             createPlaylist()
             navigateBack()
-        }
+        },
+        screenTitleRes = R.string.new_playlist,
+        buttonTitleRes = R.string.Create
     )
 }
 
 @Composable
-fun NewPlaylistScreenContent(
+fun NewOrEditPlaylistScreenContent(
     navigateBack: () -> Unit,
     fillName: (String) -> Unit,
     fillDescription: (String) -> Unit,
     fillUri: (Uri?) -> Unit,
     doOnButtonClick: () -> Unit,
+    @StringRes  screenTitleRes: Int,
+    @StringRes  buttonTitleRes: Int,
+    initialName: String? = null,
+    initialDescription: String? = null,
+    initialCoverUri: Uri? = null
 ) {
     var buttonEnabled by remember { mutableStateOf(false) }
 
@@ -109,12 +115,13 @@ fun NewPlaylistScreenContent(
     ) {
 
         TitleWithArrow(
-            title = stringResource(id = R.string.new_playlist),
+            title = stringResource(id = screenTitleRes),
             navigateBack = { navigateBack() }
         )
 
         PlaylistCoverSection(
-            doOnClick = { fillUri(it) }
+            doOnClick = { fillUri(it) },
+           initialUri = initialCoverUri
         )
 
         UserInput(
@@ -122,18 +129,20 @@ fun NewPlaylistScreenContent(
             onValueChanged = {
                 buttonEnabled = it.isNotBlank()
                 fillName(it)
-            }
+            },
+            initialText = initialName ?: ""
         )
 
         UserInput(
             hintRes = R.string.Description,
-            onValueChanged = { fillDescription(it) }
+            onValueChanged = { fillDescription(it) },
+            initialText = initialDescription ?: ""
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         NewPlaylistScreenButton(
-            titleRes = R.string.Create,
+            titleRes = buttonTitleRes,
             doOnButtonClick = { doOnButtonClick() },
             enabled = buttonEnabled
         )
@@ -178,9 +187,10 @@ fun TitleWithArrow(
 @Composable
 fun PlaylistCoverSection(
     doOnClick: (Uri?) -> Unit,
+    initialUri: Uri? = null
 ) {
 
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(initialUri) }
 
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -226,9 +236,10 @@ fun PlaylistCoverSection(
 @Composable
 fun UserInput(
     @StringRes hintRes: Int,
+    initialText: String = "",
     onValueChanged: ((String) -> Unit)? = null
 ) {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf(initialText) }
     TextField(
         value = text,
         onValueChange = {

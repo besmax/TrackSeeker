@@ -39,9 +39,9 @@ import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.search.SearchViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.Loading
 import bes.max.trackseeker.ui.Title
 import bes.max.trackseeker.ui.TrackList
-import bes.max.trackseeker.ui.Loading
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpLightGray

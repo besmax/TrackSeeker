@@ -1,6 +1,7 @@
 package bes.max.trackseeker.ui.mediateka.playlistdetails
 
 import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,19 +25,18 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -44,7 +44,6 @@ import androidx.navigation.NavController
 import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Playlist
 import bes.max.trackseeker.domain.models.Track
-import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetails
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsScreenState
 import bes.max.trackseeker.presentation.mediateka.playlistdetails.PlaylistDetailsViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
@@ -58,7 +57,6 @@ import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.time.format.TextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +79,14 @@ fun PlaylistDetailsScreen(
         mutableStateOf(false)
     }
 
+    var showDeleteTrackDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var trackIdForDelete by remember {
+        mutableLongStateOf(0)
+    }
+
     Box(modifier = Modifier.background(color = YpLightGray)) {
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
@@ -97,6 +103,10 @@ fun PlaylistDetailsScreen(
                                 encodeTrackArg
                             )
                         )
+                    },
+                    onLongItemClick = { trackId ->
+                        trackIdForDelete = trackId
+                        showDeleteTrackDialog = true
                     }
                 )
             },
@@ -142,27 +152,46 @@ fun PlaylistDetailsScreen(
                                     (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
                                 )
                             },
-                            editPlaylist = { /*TODO*/ },
+                            editPlaylist = {
+                                navController.navigate(
+                                    Screen.EditPlaylistScreen.route.replace(
+                                        "{playlistId}",
+                                        (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist.id.toString()
+                                    )
+                                )
+                            },
                             deletePlaylist = { showDeletePlaylistDialog = true })
                     }
                 )
             }
 
             if (showDeletePlaylistDialog) {
-                DeletePlaylistDialog(
+                DeleteDialog(
                     onDismissRequest = { showDeletePlaylistDialog = false },
                     onConfirm = {
                         playlistDetailsViewModel.deletePlaylist(
                             (screenState as PlaylistDetailsScreenState.Content).playlistDetails.playlist
                         )
                         navController.navigateUp()
-                    }
+                    },
+                    titleResId = R.string.delete_playlist,
+                    textResId = R.string.want_delete_playlist
                 )
             }
 
+            if (showDeleteTrackDialog) {
+                DeleteDialog(
+                    onDismissRequest = { showDeleteTrackDialog = false },
+                    onConfirm = {
+                        playlistDetailsViewModel.deleteTrackFromPlaylist(trackIdForDelete)
+                        showDeleteTrackDialog = false
+                    },
+                    titleResId = R.string.playlistdetails_screen_dialog_title,
+                    textResId = R.string.playlistdetails_screen_dialog_message
+                )
+            }
         }
     }
-
 
 }
 
@@ -337,21 +366,25 @@ fun MenuBottomSheetContent(
 fun TracksBottomSheetContent(
     tracks: List<Track>,
     onItemClick: (Track) -> Unit,
+    onLongItemClick: (Long) -> Unit
 ) {
 
     TrackList(
         tracks = tracks,
         onItemClick = { track -> onItemClick(track) },
         isReverse = false,
+        onLongItemClick = { trackId -> onLongItemClick(trackId) }
     )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeletePlaylistDialog(
+fun DeleteDialog(
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
+    @StringRes titleResId: Int,
+    @StringRes textResId: Int,
 ) {
 
     AlertDialog(
@@ -361,7 +394,7 @@ fun DeletePlaylistDialog(
             modifier = Modifier.background(color = Color.White)
         ) {
             Text(
-                text = stringResource(id = R.string.delete_playlist),
+                text = stringResource(id = titleResId),
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
@@ -372,7 +405,7 @@ fun DeletePlaylistDialog(
             )
 
             Text(
-                text = stringResource(id = R.string.want_delete_playlist),
+                text = stringResource(id = textResId),
                 fontFamily = ysDisplayFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
