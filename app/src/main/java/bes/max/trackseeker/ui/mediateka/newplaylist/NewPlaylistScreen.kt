@@ -1,53 +1,153 @@
 package bes.max.trackseeker.ui.mediateka.newplaylist
 
-import androidx.compose.foundation.Image
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bes.max.trackseeker.R
-import bes.max.trackseeker.domain.models.Track
-import bes.max.trackseeker.presentation.mediateka.NewPlaylistViewModel
+import bes.max.trackseeker.presentation.mediateka.newplaylist.NewPlaylistViewModel
+import bes.max.trackseeker.ui.theme.YpBlack
+import bes.max.trackseeker.ui.theme.YpBlue
+import bes.max.trackseeker.ui.theme.YpGray
+import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
+import coil.compose.AsyncImage
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NewPlaylistScreen(
     navigateBack: () -> Unit,
-    track: Track? = null,
+    track: String? = null,
     newPlaylistViewModel: NewPlaylistViewModel = koinViewModel()
 ) {
 
+    var name: String? = null
+    var description: String? = null
+    var uri: Uri? = null
+    val createPlaylist = {
+        name?.let { name ->
+            newPlaylistViewModel.createPlaylist(
+                name = name,
+                description = description,
+                trackArg = track,
+                uri = uri
+            )
+        }
+    }
+
+    NewOrEditPlaylistScreenContent(
+        navigateBack = { navigateBack() },
+        fillName = { name = it },
+        fillDescription = { description = it },
+        fillUri = { uri = it },
+        doOnButtonClick = {
+            createPlaylist()
+            navigateBack()
+        },
+        screenTitleRes = R.string.new_playlist,
+        buttonTitleRes = R.string.Create
+    )
 }
 
 @Composable
-fun NewPlaylistScreenContent(
+fun NewOrEditPlaylistScreenContent(
     navigateBack: () -> Unit,
+    fillName: (String) -> Unit,
+    fillDescription: (String) -> Unit,
+    fillUri: (Uri?) -> Unit,
+    doOnButtonClick: () -> Unit,
+    @StringRes  screenTitleRes: Int,
+    @StringRes  buttonTitleRes: Int,
+    initialName: String? = null,
+    initialDescription: String? = null,
+    initialCoverUri: Uri? = null
 ) {
+    var buttonEnabled by remember { mutableStateOf(false) }
 
-    TitleWithArrow(
-        title = stringResource(id = R.string.new_playlist),
-        navigateBack = { navigateBack() }
-    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
+
+        TitleWithArrow(
+            title = stringResource(id = screenTitleRes),
+            navigateBack = { navigateBack() }
+        )
+
+        PlaylistCoverSection(
+            doOnClick = { fillUri(it) },
+           initialUri = initialCoverUri
+        )
+
+        UserInput(
+            hintRes = R.string.new_playlist_name,
+            onValueChanged = {
+                buttonEnabled = it.isNotBlank()
+                fillName(it)
+            },
+            initialText = initialName ?: ""
+        )
+
+        UserInput(
+            hintRes = R.string.Description,
+            onValueChanged = { fillDescription(it) },
+            initialText = initialDescription ?: ""
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        NewPlaylistScreenButton(
+            titleRes = buttonTitleRes,
+            doOnButtonClick = { doOnButtonClick() },
+            enabled = buttonEnabled
+        )
+
+    }
 }
 
 @Composable
@@ -75,7 +175,9 @@ fun TitleWithArrow(
             text = title,
             fontFamily = ysDisplayFamily,
             fontWeight = FontWeight.Medium,
-            fontSize = 22.sp
+            fontSize = 22.sp,
+            modifier = Modifier
+                .padding(start = 12.dp),
         )
 
     }
@@ -84,26 +186,136 @@ fun TitleWithArrow(
 
 @Composable
 fun PlaylistCoverSection(
-    doOnClick: () -> Unit,
+    doOnClick: (Uri?) -> Unit,
+    initialUri: Uri? = null
 ) {
+
+    var imageUri by remember { mutableStateOf<Uri?>(initialUri) }
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+            doOnClick(uri)
+        }
+
+    val stroke = Stroke(
+        width = 4f,
+        pathEffect = PathEffect.dashPathEffect(floatArrayOf(60f, 60f), 1f)
+    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(312.dp)
+            .aspectRatio(1f)
             .padding(24.dp)
-            .clip(RoundedCornerShape(8.dp)),
+            .clip(RoundedCornerShape(8.dp))
+            .drawBehind {
+                drawRoundRect(color = YpGray, style = stroke)
+            }
+            .clickable {
+                launcher.launch("image/*")
+            },
         contentAlignment = Alignment.Center
     ) {
-        Image(painter = painterResource(R.drawable.shape_playlist_cover), contentDescription = null,
-            modifier = Modifier.matchParentSize())
 
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant) {
-            Image(painter = painterResource(
-                id = R.drawable.img_new_playlist_placeholder),
-                contentDescription = "Default playlist cover"
+
+            AsyncImage(
+                model = imageUri,
+                contentDescription = "playlist cover",
+                error = painterResource(id = R.drawable.playlist_placeholder_grid),
+                placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
+                modifier = Modifier.aspectRatio(1f),
+                contentScale = ContentScale.FillBounds
+
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserInput(
+    @StringRes hintRes: Int,
+    initialText: String = "",
+    onValueChanged: ((String) -> Unit)? = null
+) {
+    var text by remember { mutableStateOf(initialText) }
+    TextField(
+        value = text,
+        onValueChange = {
+            text = it
+            onValueChanged?.invoke(it)
+        },
+        label = { if (text.isBlank()) Text(text = stringResource(id = hintRes)) },
+        maxLines = 1,
+        textStyle = TextStyle(
+            fontFamily = ysDisplayFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp
+        ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = YpLightGray,
+            unfocusedContainerColor = YpLightGray,
+            disabledContainerColor = YpLightGray,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            focusedTextColor = YpBlack,
+            unfocusedTextColor = YpBlack
+        ),
+        trailingIcon = {
+            if (text.isNotBlank()) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_clear_text),
+                    contentDescription = "clear text icon",
+                    modifier = Modifier
+                        .clickable {
+                            text = ""
+                            if (onValueChanged != null) {
+                                onValueChanged("")
+                            }
+                        }
+                )
+            }
+        },
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .onFocusChanged {
+                if (it.hasFocus && text.isBlank()) {
+                    onValueChanged?.invoke(text)
+                }
+            }
+    )
+}
+
+@Composable
+fun NewPlaylistScreenButton(
+    @StringRes titleRes: Int,
+    doOnButtonClick: () -> Unit,
+    enabled: Boolean = true
+) {
+    Button(
+        onClick = { doOnButtonClick() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = YpBlue,
+            contentColor = Color.White
+        ),
+        enabled = enabled,
+        shape = RoundedCornerShape(8.dp),
+    ) {
+        Text(
+            text = stringResource(id = titleRes),
+            fontFamily = ysDisplayFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp
+        )
+    }
+
 }
 
 @Composable
@@ -119,6 +331,6 @@ fun TitleWithArrowPreview() {
 @Preview
 fun PlaylistCoverSectionPreview() {
     PlaylistCoverSection(
-        doOnClick = {  }
+        doOnClick = { }
     )
 }

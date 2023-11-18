@@ -49,7 +49,7 @@ class PlayerImpl(private val mediaPlayer: MediaPlayer) : Player {
 
     override fun releasePlayer() {
         try {
-            mediaPlayer.release()
+            mediaPlayer.reset()
             _playerState.value = PlayerState.STATE_DEFAULT
         } catch (e: IllegalStateException) {
             Log.e(TAG, "exception in releasePlayer() ${e.toString()}")

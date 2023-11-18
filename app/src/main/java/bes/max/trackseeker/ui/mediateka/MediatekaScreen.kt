@@ -1,4 +1,4 @@
-package bes.max.trackseeker.ui
+package bes.max.trackseeker.ui.mediateka
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import bes.max.trackseeker.R
+import bes.max.trackseeker.ui.Title
 import bes.max.trackseeker.ui.mediateka.favorite.FavoriteTracksScreen
 import bes.max.trackseeker.ui.mediateka.playlists.PlaylistsScreen
 import bes.max.trackseeker.ui.theme.YpBlack
@@ -90,7 +91,7 @@ fun MediatekaScreenContent(
 
         when(tabIndex) {
             0 -> FavoriteTracksScreen(navController = navController)
-            1 -> PlaylistsScreen()
+            1 -> PlaylistsScreen(navController = navController)
         }
 
     }

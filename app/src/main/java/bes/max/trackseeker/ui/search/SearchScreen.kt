@@ -7,13 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -40,10 +39,11 @@ import bes.max.trackseeker.R
 import bes.max.trackseeker.domain.models.Track
 import bes.max.trackseeker.presentation.search.SearchViewModel
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
+import bes.max.trackseeker.ui.Loading
 import bes.max.trackseeker.ui.Title
 import bes.max.trackseeker.ui.TrackList
 import bes.max.trackseeker.ui.navigation.Screen
-import bes.max.trackseeker.ui.theme.YpBlue
+import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpLightGray
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import org.koin.androidx.compose.koinViewModel
@@ -98,7 +98,7 @@ fun SearchScreenContent(
                 isReverse = false
             )
 
-            is SearchScreenState.Loading -> SearchLoading()
+            is SearchScreenState.Loading -> Loading()
 
             is SearchScreenState.TracksNotFound -> SearchTracksNotFound()
 
@@ -107,7 +107,6 @@ fun SearchScreenContent(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserInput(onValueChanged: (String) -> Unit) {
     var text by remember { mutableStateOf("") }
@@ -124,12 +123,15 @@ fun UserInput(onValueChanged: (String) -> Unit) {
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp
         ),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = YpLightGray,
-            disabledIndicatorColor = Color.Transparent,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = YpLightGray,
+            unfocusedContainerColor = YpLightGray,
+            disabledContainerColor = YpLightGray,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            textColor = Color.Black
+            disabledIndicatorColor = Color.Transparent,
+            focusedTextColor = YpBlack,
+            unfocusedTextColor = YpBlack
         ),
         leadingIcon = {
             Icon(
@@ -186,8 +188,8 @@ fun SearchError(refreshSearch: () -> Unit) {
             modifier = Modifier
                 .padding(top = 24.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.button_background),
-                contentColor = colorResource(id = R.color.button_text)
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background
             )
         ) {
             Text(
@@ -197,22 +199,6 @@ fun SearchError(refreshSearch: () -> Unit) {
                 fontSize = 14.sp
             )
         }
-    }
-}
-
-@Composable
-fun SearchLoading() {
-    Column(
-        modifier = Modifier
-            .padding(top = 140.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .size(44.dp),
-            color = YpBlue,
-        )
     }
 }
 
@@ -244,7 +230,7 @@ fun SearchHistory(tracks: List<Track>, clearHistory: () -> Unit, onItemClick: (T
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, top = 42.dp, end = 16.dp, bottom = 20.dp),
+                .padding(top = 42.dp, bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

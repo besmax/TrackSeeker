@@ -8,9 +8,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import bes.max.trackseeker.presentation.utils.GsonTrackConverter
-import bes.max.trackseeker.ui.MediatekaScreen
 import bes.max.trackseeker.ui.SettingsScreen
+import bes.max.trackseeker.ui.mediateka.MediatekaScreen
+import bes.max.trackseeker.ui.mediateka.editplaylist.EditPlaylistScreen
 import bes.max.trackseeker.ui.mediateka.favorite.FavoriteTracksScreen
+import bes.max.trackseeker.ui.mediateka.newplaylist.NewPlaylistScreen
+import bes.max.trackseeker.ui.mediateka.playlistdetails.PlaylistDetailsScreen
 import bes.max.trackseeker.ui.player.PlayerScreen
 import bes.max.trackseeker.ui.search.SearchScreen
 
@@ -37,7 +40,8 @@ fun NavigationGraph(navController: NavHostController) {
             val track = GsonTrackConverter.fromJsonToTrack(trackArg)
             PlayerScreen(
                 track,
-                navigateBack = { navController.popBackStack() })
+                navController = navController
+            )
         }
         composable(route = Screen.FavoritetracksScreen.route) {
             FavoriteTracksScreen(navController = navController)
@@ -45,6 +49,49 @@ fun NavigationGraph(navController: NavHostController) {
         composable(route = Screen.MediatekaScreen.route) {
             MediatekaScreen(navController = navController)
         }
+
+        composable(
+            route = Screen.NewPlaylistScreen.route,
+            arguments = listOf(
+                navArgument(name = "track") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )) {
+            val encodedTrackArg = it.arguments?.getString("track")
+            NewPlaylistScreen(
+                track = encodedTrackArg,
+                navigateBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = Screen.PlaylistDetailsScreen.route,
+            arguments = listOf(
+                navArgument(name = "playlistId") {
+                    type = NavType.LongType
+                    nullable = false
+                }
+            )
+            ) {
+            PlaylistDetailsScreen(
+                navController = navController
+            )
+        }
+
+        composable(
+            route = Screen.EditPlaylistScreen.route,
+            arguments = listOf(
+                navArgument(name = "playlistId") {
+                    type = NavType.LongType
+                    nullable = false
+                }
+            )
+        ) {
+            EditPlaylistScreen(
+                navController = navController
+            )
+        }
+
         composable(route = Screen.SettingsScreen.route) {
             SettingsScreen()
         }

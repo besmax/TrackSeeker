@@ -15,9 +15,11 @@ class TrackDbMapper {
             country = track.country,
             previewUrl = track.previewUrl ?: "",
             trackTime = track.trackTime,
+            trackTimeMillis = track.trackTimeMillis,
             bigCover = track.bigCover,
             year = track.year,
-            addingDate = System.currentTimeMillis()
+            addingDate = System.currentTimeMillis(),
+            isFavorite = track.isFavorite
         )
 
     fun map(track: TrackEntity): Track =
@@ -25,7 +27,7 @@ class TrackDbMapper {
             trackId = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
-            trackTimeMillis = 0L,
+            trackTimeMillis = track.trackTimeMillis,
             artworkUrl100 = "",
             collectionName = track.collectionName,
             releaseDate = track.year,
@@ -34,6 +36,7 @@ class TrackDbMapper {
             previewUrl = track.previewUrl,
             trackTime = track.trackTime,
             bigCover = track.bigCover,
-            year = track.year
+            year = track.year,
+            isFavorite = track.isFavorite ?: false
         )
 }
