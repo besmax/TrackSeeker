@@ -246,8 +246,8 @@ fun SearchHistory(tracks: List<Track>, clearHistory: () -> Unit, onItemClick: (T
                 modifier = Modifier
                     .padding(top = 24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(id = R.color.button_background),
-                    contentColor = colorResource(id = R.color.button_text)
+                    containerColor = MaterialTheme.colorScheme.onBackground,
+                    contentColor = MaterialTheme.colorScheme.background
                 )
             ) {
                 Text(

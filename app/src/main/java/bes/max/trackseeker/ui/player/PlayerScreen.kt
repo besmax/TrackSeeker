@@ -2,6 +2,7 @@ package bes.max.trackseeker.ui.player
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -238,18 +239,16 @@ fun PlayerScreenContent(
         )
 
         Row(modifier = Modifier) {
-            IconButton(
-                onClick = { openBottomSheet() },
+
+            Icon(
+                painter = painterResource(id = R.drawable.ic_player_add),
+                contentDescription = "Add to playlist button",
                 modifier = Modifier
                     .padding(top = 54.dp)
                     .size(51.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_player_add),
-                    contentDescription = "Add to playlist button",
-                    tint = Color.Unspecified, // TODO check
-                    )
-            }
+                    .clickable { openBottomSheet() }
+            )
+
 
             IconButton(
                 onClick = { playbackControl() },
@@ -269,20 +268,18 @@ fun PlayerScreenContent(
                 )
             }
 
-            IconButton(
-                onClick = { addOrDeleteFromFavorite() },
+
+            Icon(
+                painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
+                else painterResource(id = R.drawable.ic_player_like),
+                contentDescription = "Add to favorite tracks button",
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .padding(top = 54.dp)
-                    .size(51.dp),
+                    .size(51.dp)
+                    .clickable { addOrDeleteFromFavorite() }
+            )
 
-                ) {
-                Icon(
-                    painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
-                    else painterResource(id = R.drawable.ic_player_like),
-                    contentDescription = "Add to favorite tracks button",
-                    tint = Color.Unspecified, // TODO check
-                )
-            }
         }
 
         Text(
