@@ -1,6 +1,11 @@
 package bes.max.trackseeker.ui.player
 
 import android.net.Uri
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,14 +41,17 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -268,17 +276,21 @@ fun PlayerScreenContent(
                 )
             }
 
+            LikeIcon(
+                isFavorite = isFavorite,
+                addOrDeleteFromFavorite = { addOrDeleteFromFavorite() })
 
-            Icon(
-                painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
-                else painterResource(id = R.drawable.ic_player_like),
-                contentDescription = "Add to favorite tracks button",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .padding(top = 54.dp)
-                    .size(51.dp)
-                    .clickable { addOrDeleteFromFavorite() }
-            )
+
+//            Icon(
+//                painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
+//                else painterResource(id = R.drawable.ic_player_like),
+//                contentDescription = "Add to favorite tracks button",
+//                tint = Color.Unspecified,
+//                modifier = Modifier
+//                    .padding(top = 54.dp)
+//                    .size(51.dp)
+//                    .clickable { addOrDeleteFromFavorite() }
+//            )
 
         }
 
@@ -391,6 +403,34 @@ fun PlaylistsRowList(
         ) { playlist ->
             PlaylistRowListItem(playlist, onItemClick)
         }
+    }
+}
+
+@Composable
+fun LikeIcon(
+    isFavorite: Boolean,
+    addOrDeleteFromFavorite: () -> Unit
+) {
+    var isClicked by remember { mutableStateOf(false) }
+
+    val size by animateDpAsState(
+        targetValue = if (isClicked) 82.dp else 51.dp,
+        animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
+        label = "LikeIconSizeAnimation"
+    )
+
+    IconButton(onClick = {
+        isClicked = !isClicked
+        addOrDeleteFromFavorite()
+    }) {
+        Icon(
+            painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
+            else painterResource(id = R.drawable.ic_player_like),
+            contentDescription = "Add to favorite tracks button",
+            modifier = Modifier
+                .padding(top = 54.dp)
+                .size(size)
+        )
     }
 }
 
