@@ -80,6 +80,8 @@ import bes.max.trackseeker.ui.theme.YpGray
 import bes.max.trackseeker.ui.theme.YpRed
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -104,6 +106,8 @@ fun PlayerScreen(
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false)
     )
+
+    val animScope = rememberCoroutineScope()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -157,7 +161,8 @@ fun PlayerScreen(
                 bottomSheetScope.launch {
                     scaffoldState.bottomSheetState.expand()
                 }
-            }
+            },
+            coroutineScope = animScope
         )
 
         //showing snackbar if track was added to playlist or not
@@ -198,6 +203,7 @@ fun PlayerScreenContent(
     playbackControl: () -> Unit,
     addOrDeleteFromFavorite: () -> Unit,
     openBottomSheet: () -> Unit,
+    coroutineScope: CoroutineScope
 ) {
     Column(
         modifier = Modifier
@@ -285,7 +291,9 @@ fun PlayerScreenContent(
 
             LikeIcon(
                 isFavorite = isFavorite,
-                addOrDeleteFromFavorite = { addOrDeleteFromFavorite() }
+                addOrDeleteFromFavorite = { addOrDeleteFromFavorite() },
+                coroutineScope = coroutineScope
+
             )
 
 //            Icon(
@@ -416,7 +424,8 @@ fun PlaylistsRowList(
 @Composable
 fun LikeIcon(
     isFavorite: Boolean,
-    addOrDeleteFromFavorite: () -> Unit
+    addOrDeleteFromFavorite: () -> Unit,
+    coroutineScope: CoroutineScope
 ) {
     var animationState by remember { mutableStateOf(AnimationState.Start) }
 
@@ -427,24 +436,22 @@ fun LikeIcon(
             AnimationState.Mid -> 35.dp
             AnimationState.Finish -> 25.dp
         },
-        animationSpec = repeatable(
-            iterations = 2,
-            animation = tween(durationMillis = 1000),
-            repeatMode = RepeatMode.Reverse
-        ),
+        animationSpec = tween(durationMillis = 200),
         label = "LikeIconSizeAnimation"
     )
 
     val color by animateColorAsState(
         targetValue = if (isFavorite) YpRed else MaterialTheme.colorScheme.onBackground,
-        animationSpec = tween(durationMillis = 400),
+        animationSpec = tween(durationMillis = 200),
         label = "colorOfLikeIcon"
     )
 
     IconButton(
         onClick = {
-            LaunchedEffect(animationState) {
-
+            coroutineScope.launch {
+                animationState = AnimationState.Mid
+                delay(200)
+                animationState = AnimationState.Finish
             }
             addOrDeleteFromFavorite()
         },
