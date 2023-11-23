@@ -1,10 +1,14 @@
 package bes.max.trackseeker.ui.player
 
 import android.net.Uri
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +27,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -71,6 +77,7 @@ import bes.max.trackseeker.ui.PlaylistRowListItem
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpGray
+import bes.max.trackseeker.ui.theme.YpRed
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
@@ -278,8 +285,8 @@ fun PlayerScreenContent(
 
             LikeIcon(
                 isFavorite = isFavorite,
-                addOrDeleteFromFavorite = { addOrDeleteFromFavorite() })
-
+                addOrDeleteFromFavorite = { addOrDeleteFromFavorite() }
+            )
 
 //            Icon(
 //                painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
@@ -411,27 +418,60 @@ fun LikeIcon(
     isFavorite: Boolean,
     addOrDeleteFromFavorite: () -> Unit
 ) {
-    var isClicked by remember { mutableStateOf(false) }
+    var animationState by remember { mutableStateOf(AnimationState.Start) }
 
     val size by animateDpAsState(
-        targetValue = if (isClicked) 82.dp else 51.dp,
-        animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
+        targetValue =
+        when (animationState) {
+            AnimationState.Start -> 25.dp
+            AnimationState.Mid -> 35.dp
+            AnimationState.Finish -> 25.dp
+        },
+        animationSpec = repeatable(
+            iterations = 2,
+            animation = tween(durationMillis = 1000),
+            repeatMode = RepeatMode.Reverse
+        ),
         label = "LikeIconSizeAnimation"
     )
 
-    IconButton(onClick = {
-        isClicked = !isClicked
-        addOrDeleteFromFavorite()
-    }) {
+    val color by animateColorAsState(
+        targetValue = if (isFavorite) YpRed else MaterialTheme.colorScheme.onBackground,
+        animationSpec = tween(durationMillis = 400),
+        label = "colorOfLikeIcon"
+    )
+
+    IconButton(
+        onClick = {
+            LaunchedEffect(animationState) {
+
+            }
+            addOrDeleteFromFavorite()
+        },
+        modifier = Modifier
+            .padding(top = 54.dp)
+            .clip(RoundedCornerShape(100.dp))
+            .size(51.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.25f)
+                .background(MaterialTheme.colorScheme.onBackground)
+        )
+
         Icon(
-            painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
-            else painterResource(id = R.drawable.ic_player_like),
+            imageVector = Icons.Default.Favorite,
+            tint = color,
             contentDescription = "Add to favorite tracks button",
             modifier = Modifier
-                .padding(top = 54.dp)
                 .size(size)
         )
     }
+}
+
+enum class AnimationState {
+    Start, Mid, Finish
 }
 
 @Composable
