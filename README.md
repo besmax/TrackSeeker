@@ -12,8 +12,13 @@
 - SharedPreferences
 - DataStore
 
-![Screen_recording_20231124_212320](https://github.com/besmax/TrackSeeker/assets/88286767/b24a62c8-7353-4377-a56d-fd5727ff43ec)
+## Nexus 5x
 
+![Screen_recording_20231124_212320 (1)](https://github.com/besmax/TrackSeeker/assets/88286767/13ac01fa-7b0b-4e9f-ab26-10771c0d844e)
+
+## Pixel 4
+
+![Screen_recording_20231124_213236](https://github.com/besmax/TrackSeeker/assets/88286767/5e7401c7-c9b1-4508-a35c-7df3af22d14e)
 
 ## Скриншоты экранов
 
