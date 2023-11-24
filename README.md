@@ -12,6 +12,9 @@
 - SharedPreferences
 - DataStore
 
+![Screen_recording_20231124_212320](https://github.com/besmax/TrackSeeker/assets/88286767/b24a62c8-7353-4377-a56d-fd5727ff43ec)
+
+
 ## Скриншоты экранов
 
 ### Экран поиска с историей поиска (10 последних открытых песен)
