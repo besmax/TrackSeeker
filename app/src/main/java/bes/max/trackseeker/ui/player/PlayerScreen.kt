@@ -2,14 +2,12 @@ package bes.max.trackseeker.ui.player
 
 import android.net.Uri
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.repeatable
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
+import androidx.compose.animation.graphics.res.animatedVectorResource
+import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
+import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,8 +54,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -193,6 +189,7 @@ fun PlayerScreen(
     }
 }
 
+@OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
 fun PlayerScreenContent(
     playerState: PlayerState,
@@ -270,21 +267,28 @@ fun PlayerScreenContent(
                     .clickable { openBottomSheet() }
             )
 
+            var atEnd by remember { mutableStateOf(false) }
 
             IconButton(
-                onClick = { playbackControl() },
+                onClick = {
+                    atEnd = !atEnd
+                    playbackControl()
+                },
                 modifier = Modifier
                     .padding(start = 56.dp, end = 56.dp, top = 30.dp)
                     .size(100.dp)
             ) {
-                Icon(
-                    painter = when (playerState) {
-                        PlayerState.STATE_DEFAULT, PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
-                            painterResource(id = R.drawable.ic_player_play)
-                        }
+                val playPauseIcon = AnimatedImageVector.animatedVectorResource(
+                    id = if (playerState == PlayerState.STATE_PLAYING)
+                        R.drawable.avd_pause_to_play
+                    else R.drawable.avd_play_to_pause
+                )
 
-                        PlayerState.STATE_PLAYING -> painterResource(id = R.drawable.ic_player_pause)
-                    },
+                Icon(
+                    painter = rememberAnimatedVectorPainter(
+                        animatedImageVector = playPauseIcon,
+                        atEnd = atEnd
+                    ),
                     contentDescription = "Play-pause button",
                 )
             }
@@ -295,17 +299,6 @@ fun PlayerScreenContent(
                 coroutineScope = coroutineScope
 
             )
-
-//            Icon(
-//                painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
-//                else painterResource(id = R.drawable.ic_player_like),
-//                contentDescription = "Add to favorite tracks button",
-//                tint = Color.Unspecified,
-//                modifier = Modifier
-//                    .padding(top = 54.dp)
-//                    .size(51.dp)
-//                    .clickable { addOrDeleteFromFavorite() }
-//            )
 
         }
 
@@ -443,7 +436,7 @@ fun LikeIcon(
     val color by animateColorAsState(
         targetValue = if (isFavorite) YpRed else MaterialTheme.colorScheme.onBackground,
         animationSpec = tween(durationMillis = 200),
-        label = "colorOfLikeIcon"
+        label = "LikeIconColorAnimation"
     )
 
     IconButton(
