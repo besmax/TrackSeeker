@@ -1,6 +1,13 @@
 package bes.max.trackseeker.ui.player
 
 import android.net.Uri
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
+import androidx.compose.animation.graphics.res.animatedVectorResource
+import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
+import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +25,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,14 +45,15 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,8 +73,11 @@ import bes.max.trackseeker.ui.PlaylistRowListItem
 import bes.max.trackseeker.ui.navigation.Screen
 import bes.max.trackseeker.ui.theme.YpBlack
 import bes.max.trackseeker.ui.theme.YpGray
+import bes.max.trackseeker.ui.theme.YpRed
 import bes.max.trackseeker.ui.theme.ysDisplayFamily
 import coil.compose.AsyncImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -89,6 +102,8 @@ fun PlayerScreen(
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false)
     )
+
+    val animScope = rememberCoroutineScope()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -142,7 +157,8 @@ fun PlayerScreen(
                 bottomSheetScope.launch {
                     scaffoldState.bottomSheetState.expand()
                 }
-            }
+            },
+            coroutineScope = animScope
         )
 
         //showing snackbar if track was added to playlist or not
@@ -173,6 +189,7 @@ fun PlayerScreen(
     }
 }
 
+@OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
 fun PlayerScreenContent(
     playerState: PlayerState,
@@ -183,6 +200,7 @@ fun PlayerScreenContent(
     playbackControl: () -> Unit,
     addOrDeleteFromFavorite: () -> Unit,
     openBottomSheet: () -> Unit,
+    coroutineScope: CoroutineScope
 ) {
     Column(
         modifier = Modifier
@@ -249,35 +267,37 @@ fun PlayerScreenContent(
                     .clickable { openBottomSheet() }
             )
 
+            var atEnd by remember { mutableStateOf(false) }
 
             IconButton(
-                onClick = { playbackControl() },
+                onClick = {
+                    atEnd = !atEnd
+                    playbackControl()
+                },
                 modifier = Modifier
                     .padding(start = 56.dp, end = 56.dp, top = 30.dp)
                     .size(100.dp)
             ) {
-                Icon(
-                    painter = when (playerState) {
-                        PlayerState.STATE_DEFAULT, PlayerState.STATE_PREPARED, PlayerState.STATE_PAUSED -> {
-                            painterResource(id = R.drawable.ic_player_play)
-                        }
+                val playPauseIcon = AnimatedImageVector.animatedVectorResource(
+                    id = if (playerState == PlayerState.STATE_PLAYING)
+                        R.drawable.avd_pause_to_play
+                    else R.drawable.avd_play_to_pause
+                )
 
-                        PlayerState.STATE_PLAYING -> painterResource(id = R.drawable.ic_player_pause)
-                    },
+                Icon(
+                    painter = rememberAnimatedVectorPainter(
+                        animatedImageVector = playPauseIcon,
+                        atEnd = atEnd
+                    ),
                     contentDescription = "Play-pause button",
                 )
             }
 
+            LikeIcon(
+                isFavorite = isFavorite,
+                addOrDeleteFromFavorite = { addOrDeleteFromFavorite() },
+                coroutineScope = coroutineScope
 
-            Icon(
-                painter = if (isFavorite) painterResource(id = R.drawable.ic_player_like_active)
-                else painterResource(id = R.drawable.ic_player_like),
-                contentDescription = "Add to favorite tracks button",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .padding(top = 54.dp)
-                    .size(51.dp)
-                    .clickable { addOrDeleteFromFavorite() }
             )
 
         }
@@ -392,6 +412,66 @@ fun PlaylistsRowList(
             PlaylistRowListItem(playlist, onItemClick)
         }
     }
+}
+
+@Composable
+fun LikeIcon(
+    isFavorite: Boolean,
+    addOrDeleteFromFavorite: () -> Unit,
+    coroutineScope: CoroutineScope
+) {
+    var animationState by remember { mutableStateOf(AnimationState.Start) }
+
+    val size by animateDpAsState(
+        targetValue =
+        when (animationState) {
+            AnimationState.Start -> 25.dp
+            AnimationState.Mid -> 35.dp
+            AnimationState.Finish -> 25.dp
+        },
+        animationSpec = tween(durationMillis = 200),
+        label = "LikeIconSizeAnimation"
+    )
+
+    val color by animateColorAsState(
+        targetValue = if (isFavorite) YpRed else MaterialTheme.colorScheme.onBackground,
+        animationSpec = tween(durationMillis = 200),
+        label = "LikeIconColorAnimation"
+    )
+
+    IconButton(
+        onClick = {
+            coroutineScope.launch {
+                animationState = AnimationState.Mid
+                delay(200)
+                animationState = AnimationState.Finish
+            }
+            addOrDeleteFromFavorite()
+        },
+        modifier = Modifier
+            .padding(top = 54.dp)
+            .clip(RoundedCornerShape(100.dp))
+            .size(51.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.25f)
+                .background(MaterialTheme.colorScheme.onBackground)
+        )
+
+        Icon(
+            imageVector = Icons.Default.Favorite,
+            tint = color,
+            contentDescription = "Add to favorite tracks button",
+            modifier = Modifier
+                .size(size)
+        )
+    }
+}
+
+enum class AnimationState {
+    Start, Mid, Finish
 }
 
 @Composable
