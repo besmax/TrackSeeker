@@ -7,11 +7,9 @@
 - Clean Archicture
 - MVVM
 - Jetpack Compose
-- ViewBinding
 - Koin
 - Retrofit
 - Kotlin Coroutines
-- RecyclerView, DiffUtil
 - SharedPreferences
 - DataStore
 
