@@ -24,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -148,6 +149,7 @@ fun PlaylistGridListItem(
             contentDescription = playlist.name,
             error = painterResource(id = R.drawable.playlist_placeholder_grid),
             placeholder = painterResource(id = R.drawable.playlist_placeholder_grid),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .width(160.dp)
                 .height(160.dp)

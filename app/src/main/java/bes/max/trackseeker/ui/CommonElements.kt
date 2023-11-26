@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -113,6 +114,7 @@ fun TrackListItem(
                     color = YpGray,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 250.dp)
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.ic_circle_between_text),
@@ -120,13 +122,16 @@ fun TrackListItem(
                     tint = YpGray,
                     modifier = Modifier.padding(horizontal = 5.dp)
 
+
                 )
                 Text(
                     text = track.trackTime,
                     fontFamily = ysDisplayFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 11.sp,
-                    color = YpGray
+                    color = YpGray,
+                    modifier = Modifier
+                        .weight(1f)
                 )
             }
 

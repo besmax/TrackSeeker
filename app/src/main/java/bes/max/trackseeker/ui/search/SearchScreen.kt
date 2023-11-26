@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -225,6 +228,7 @@ fun SearchTracksNotFound() {
 @Composable
 fun SearchHistory(tracks: List<Track>, clearHistory: () -> Unit, onItemClick: (Track) -> Unit) {
     if (tracks.isNotEmpty()) {
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -238,7 +242,7 @@ fun SearchHistory(tracks: List<Track>, clearHistory: () -> Unit, onItemClick: (T
                 fontSize = 19.sp,
                 textAlign = TextAlign.Center
             )
-            TrackList(tracks = tracks, onItemClick = onItemClick, isReverse = true)
+            TrackList(tracks = tracks, onItemClick = onItemClick, isReverse = true, modifier = Modifier.weight(1f))
             Button(
                 onClick = { clearHistory.invoke() },
                 modifier = Modifier
